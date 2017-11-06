@@ -37,8 +37,8 @@ class TypeSpecificationParser extends SubCParserTD
     static final EnumSet<SubCTokenType> TYPE_START_SET =
         SimpleTypeParser.SIMPLE_TYPE_START_SET.clone();
     static {
-        TYPE_START_SET.add(SubCTokenType.ARRAY);
-        TYPE_START_SET.add(SubCTokenType.RECORD);
+        //TYPE_START_SET.add(SubCTokenType.ARRAY);
+        //TYPE_START_SET.add(SubCTokenType.RECORD);
         TYPE_START_SET.add(SEMICOLON);
     }
 
@@ -56,7 +56,7 @@ class TypeSpecificationParser extends SubCParserTD
 
         switch ((SubCTokenType) token.getType()) {
 
-            case ARRAY: {
+            /*case ARRAY: {
                 ArrayTypeParser arrayTypeParser = new ArrayTypeParser(this);
                 return arrayTypeParser.parse(token);
             }
@@ -64,7 +64,7 @@ class TypeSpecificationParser extends SubCParserTD
             case RECORD: {
                 RecordTypeParser recordTypeParser = new RecordTypeParser(this);
                 return recordTypeParser.parse(token);
-            }
+            }*/
 
             default: {
                 SimpleTypeParser simpleTypeParser = new SimpleTypeParser(this);

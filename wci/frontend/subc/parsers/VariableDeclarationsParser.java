@@ -50,7 +50,7 @@ public class VariableDeclarationsParser extends DeclarationsParser
         DeclarationsParser.VAR_START_SET.clone();
     static {
         IDENTIFIER_SET.add(IDENTIFIER);
-        IDENTIFIER_SET.add(END);
+        IDENTIFIER_SET.add(RIGHT_BRACE); //CHANGED END TO RIGHT_BRACE
         IDENTIFIER_SET.add(SEMICOLON);
     }
 
@@ -105,14 +105,14 @@ public class VariableDeclarationsParser extends DeclarationsParser
 
     // Synchronization set to follow a sublist identifier.
     private static final EnumSet<SubCTokenType> IDENTIFIER_FOLLOW_SET =
-        EnumSet.of(COLON, SEMICOLON);
+        EnumSet.of(ASSIGNMENT, SEMICOLON); //REPLACE COLON WITH ASSIGNMENT
     static {
         IDENTIFIER_FOLLOW_SET.addAll(DeclarationsParser.VAR_START_SET);
     }
 
     // Synchronization set for the , token.
     private static final EnumSet<SubCTokenType> COMMA_SET =
-        EnumSet.of(COMMA, COLON, IDENTIFIER, SEMICOLON);
+        EnumSet.of(COMMA, ASSIGNMENT, IDENTIFIER, SEMICOLON); //REPLACE COLON WITH ASSIGNMENT
 
     /**
      * Parse a sublist of identifiers and their type specification.
@@ -172,7 +172,7 @@ public class VariableDeclarationsParser extends DeclarationsParser
         SymTabEntry id = null;
 
         if (token.getType() == IDENTIFIER) {
-            String name = token.getText().toLowerCase();
+            String name = token.getText(); //REMOVE .toLowerCase()
             id = symTabStack.lookupLocal(name);
 
             // Enter a new identifier into the symbol table.
@@ -196,7 +196,7 @@ public class VariableDeclarationsParser extends DeclarationsParser
 
     // Synchronization set for the : token.
     private static final EnumSet<SubCTokenType> COLON_SET =
-        EnumSet.of(COLON, SEMICOLON);
+        EnumSet.of(ASSIGNMENT, SEMICOLON); //REPLACE COLON WITH ASSIGNMENT
 
     /**
      * Parse the type specification.
@@ -209,7 +209,7 @@ public class VariableDeclarationsParser extends DeclarationsParser
     {
         // Synchronize on the : token.
         token = synchronize(COLON_SET);
-        if (token.getType() == COLON) {
+        if (token.getType() == ASSIGNMENT) { //REPLACE COLON WITH ASSIGNMENT
             token = nextToken(); // consume the :
         }
         else {

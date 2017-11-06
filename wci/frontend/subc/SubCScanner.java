@@ -53,6 +53,9 @@ public class SubCScanner extends Scanner
         else if (currentChar == '\"') {
             token = new SubCStringToken(source);
         }
+        else if (currentChar == '\'') {
+        	token = new SubCCharToken(source);
+        }
         else if (SubCTokenType.SPECIAL_SYMBOLS
                  .containsKey(Character.toString(currentChar)) || (currentChar == '&' && peekChar() == '&') || (currentChar == '|' && peekChar() == '|')) {
             token = new SubCSpecialSymbolToken(source);

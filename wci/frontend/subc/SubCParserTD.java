@@ -99,10 +99,10 @@ public class SubCParserTD extends Parser
             symTabStack.pop();
 
             // Look for the final period.
-            token = currentToken();
+            /*token = currentToken();
             if (token.getType() != DOT) {
                 errorHandler.flag(token, MISSING_PERIOD, this);
-            }
+            }*/
             token = currentToken();
 
             // Send the parser summary message.
@@ -135,6 +135,7 @@ public class SubCParserTD extends Parser
     public Token synchronize(EnumSet syncSet)
         throws Exception
     {
+    	//System.out.println(syncSet);
         Token token = currentToken();
 
         // If the current token is not in the synchronization set,

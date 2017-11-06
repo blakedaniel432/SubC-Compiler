@@ -49,8 +49,8 @@ public class BlockParser extends SubCParserTD
         TokenType tokenType = token.getType();
         ICodeNode rootNode = null;
 
-        // Look for the BEGIN token to parse a compound statement.
-        if (tokenType == BEGIN) {
+        // Look for the BEGIN token to parse a compound statement. //REPLACE BEGIN WITH LEFT_BRACE
+        if (tokenType == LEFT_BRACE) {
             rootNode = statementParser.parse(token);
         }
 
@@ -60,7 +60,7 @@ public class BlockParser extends SubCParserTD
 
             if (StatementParser.STMT_START_SET.contains(tokenType)) {
                 rootNode = ICodeFactory.createICodeNode(COMPOUND);
-                statementParser.parseList(token, rootNode, END, MISSING_END);
+                statementParser.parseList(token, rootNode, RIGHT_BRACE, MISSING_END);
             }
         }
 

@@ -44,13 +44,13 @@ public class ConstantDefinitionsParser extends DeclarationsParser
 
     // Synchronization set for starting a constant.
     static final EnumSet<SubCTokenType> CONSTANT_START_SET =
-        EnumSet.of(IDENTIFIER, INTEGER, REAL, PLUS, MINUS, STRING, SEMICOLON);
+        EnumSet.of(IDENTIFIER, INT, REAL, PLUS, MINUS, STRING, SEMICOLON);
 
     // Synchronization set for the = token.
     private static final EnumSet<SubCTokenType> EQUALS_SET =
         CONSTANT_START_SET.clone();
     static {
-        EQUALS_SET.add(EQUALS);
+        EQUALS_SET.add(ASSIGNMENT);
         EQUALS_SET.add(SEMICOLON);
     }
 
@@ -75,7 +75,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
         // Loop to parse a sequence of constant definitions
         // separated by semicolons.
         while (token.getType() == IDENTIFIER) {
-            String name = token.getText().toLowerCase();
+            String name = token.getText(); //REMOVED .toLowerCase()
             SymTabEntry constantId = symTabStack.lookupLocal(name);
 
             // Enter the new identifier into the symbol table
@@ -93,7 +93,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
 
             // Synchronize on the = token.
             token = synchronize(EQUALS_SET);
-            if (token.getType() == EQUALS) {
+            if (token.getType() == ASSIGNMENT) {
                 token = nextToken();  // consume the =
             }
             else {
@@ -165,7 +165,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
                 return parseIdentifierConstant(token, sign);
             }
 
-            case INTEGER: {
+            case INT: {
                 Integer value = (Integer) token.getValue();
                 nextToken();  // consume the number
                 return sign == MINUS ? -value : value;
@@ -203,7 +203,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
     protected Object parseIdentifierConstant(Token token, TokenType sign)
         throws Exception
     {
-        String name = token.getText().toLowerCase();
+        String name = token.getText(); //REMOVED .toLowerCase()
         SymTabEntry id = symTabStack.lookup(name);
 
         nextToken();  // consume the identifier
@@ -292,7 +292,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
      */
     protected TypeSpec getConstantType(Token identifier)
     {
-        String name = identifier.getText().toLowerCase();
+        String name = identifier.getText(); //REMOVED .toLowerCase()
         SymTabEntry id = symTabStack.lookup(name);
 
         if (id == null) {

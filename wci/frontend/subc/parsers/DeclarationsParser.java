@@ -31,7 +31,7 @@ public class DeclarationsParser extends SubCParserTD
     }
 
     static final EnumSet<SubCTokenType> DECLARATION_START_SET =
-        EnumSet.of(CONST, TYPE, VAR, PROCEDURE, FUNCTION, BEGIN);
+        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE);
 
     static final EnumSet<SubCTokenType> TYPE_START_SET =
         DECLARATION_START_SET.clone();
@@ -40,10 +40,10 @@ public class DeclarationsParser extends SubCParserTD
     }
 
     static final EnumSet<SubCTokenType> VAR_START_SET =
-        TYPE_START_SET.clone();
-    static {
+    	TYPE_START_SET.clone();
+    /*static {
         VAR_START_SET.remove(TYPE);
-    }
+    }*/
 
     static final EnumSet<SubCTokenType> ROUTINE_START_SET =
         VAR_START_SET.clone();
@@ -70,7 +70,7 @@ public class DeclarationsParser extends SubCParserTD
             constantDefinitionsParser.parse(token);
         }
 
-        token = synchronize(TYPE_START_SET);
+        /*token = synchronize(TYPE_START_SET);
 
         if (token.getType() == TYPE) {
             token = nextToken();  // consume TYPE
@@ -78,7 +78,7 @@ public class DeclarationsParser extends SubCParserTD
             TypeDefinitionsParser typeDefinitionsParser =
                 new TypeDefinitionsParser(this);
             typeDefinitionsParser.parse(token);
-        }
+        }*/
 
         token = synchronize(VAR_START_SET);
 

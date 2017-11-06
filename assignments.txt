@@ -1,18 +1,22 @@
+const
+	TWO = 2;
+
+var centigrade, five, ratio, fahrenheit, number, root, dze = int; 
+	character = char;
 {
     { //Temperature conversions
-        five = -1 + 2 - 3 + 4 + 3;
+        five = -1 + TWO - 3 + 4 + 3;
         ratio = five/9.0;
         
         while (five != 3) {
         	five = five - 1;
         }
-        if (five == 5) { 
-        	five = -3;
+        
+        if (ratio == 5/9.0) { 
+        	ratio = 1;
         }
         
         
-
-
         fahrenheit = 72;
         centigrade = (fahrenheit - 32)*ratio;
 
@@ -32,5 +36,5 @@
         root = (number/root + root)/2;
     }
 
-    str = "hello, world";
+    character = 'a';
 }

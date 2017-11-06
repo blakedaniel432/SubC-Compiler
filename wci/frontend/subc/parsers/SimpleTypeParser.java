@@ -39,7 +39,7 @@ class SimpleTypeParser extends TypeSpecificationParser
     static final EnumSet<SubCTokenType> SIMPLE_TYPE_START_SET =
         ConstantDefinitionsParser.CONSTANT_START_SET.clone();
     static {
-        SIMPLE_TYPE_START_SET.add(LEFT_PAREN);
+        //SIMPLE_TYPE_START_SET.add(LEFT_PAREN);
         SIMPLE_TYPE_START_SET.add(COMMA);
         SIMPLE_TYPE_START_SET.add(SEMICOLON);
     }
@@ -59,7 +59,7 @@ class SimpleTypeParser extends TypeSpecificationParser
         switch ((SubCTokenType) token.getType()) {
 
             case IDENTIFIER: {
-                String name = token.getText().toLowerCase();
+                String name = token.getText(); //REMOVED .toLowerCase()
                 SymTabEntry id = symTabStack.lookup(name);
 
                 if (id != null) {
@@ -74,17 +74,17 @@ class SimpleTypeParser extends TypeSpecificationParser
                         // Return the type of the referent type.
                         return id.getTypeSpec();
                     }
-                    else if ((definition != CONSTANT) &&
-                             (definition != ENUMERATION_CONSTANT)) {
+                    else /*if ((definition != CONSTANT) &&
+                             (definition != ENUMERATION_CONSTANT))*/ {
                         errorHandler.flag(token, NOT_TYPE_IDENTIFIER, this);
                         token = nextToken();  // consume the identifier
                         return null;
                     }
-                    else {
+                    /*else {
                         SubrangeTypeParser subrangeTypeParser =
                             new SubrangeTypeParser(this);
                         return subrangeTypeParser.parse(token);
-                    }
+                    }*/
                 }
                 else {
                     errorHandler.flag(token, IDENTIFIER_UNDEFINED, this);
@@ -92,12 +92,12 @@ class SimpleTypeParser extends TypeSpecificationParser
                     return null;
                 }
             }
-
-            case LEFT_PAREN: {
+        
+            /*case LEFT_PAREN: {
                 EnumerationTypeParser enumerationTypeParser =
                     new EnumerationTypeParser(this);
                 return enumerationTypeParser.parse(token);
-            }
+            }*/
 
             case COMMA:
             case SEMICOLON: {
@@ -106,9 +106,10 @@ class SimpleTypeParser extends TypeSpecificationParser
             }
 
             default: {
-                SubrangeTypeParser subrangeTypeParser =
+                /*SubrangeTypeParser subrangeTypeParser =
                     new SubrangeTypeParser(this);
-                return subrangeTypeParser.parse(token);
+                return subrangeTypeParser.parse(token);*/
+            	return null; //NOT SURE
             }
         }
     }
