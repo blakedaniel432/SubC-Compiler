@@ -1,13 +1,11 @@
-const
-	TWO = 2;
-
-var centigrade, five, ratio, fahrenheit, number, root, dze = int; 
-	character = char;
+const TWO = 2;
+var int centigrade, five, ratio, fahrenheit, number, root, dze; 
+	char character;
 {
     { //Temperature conversions
         five = -1 + TWO - 3 + 4 + 3;
         ratio = five/9.0;
-        
+
         while (five != 3) {
         	five = five - 1;
         }

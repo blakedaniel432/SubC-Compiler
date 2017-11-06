@@ -105,14 +105,14 @@ public class VariableDeclarationsParser extends DeclarationsParser
 
     // Synchronization set to follow a sublist identifier.
     private static final EnumSet<SubCTokenType> IDENTIFIER_FOLLOW_SET =
-        EnumSet.of(ASSIGNMENT, SEMICOLON); //REPLACE COLON WITH ASSIGNMENT
+        EnumSet.of(SEMICOLON); //REPLACE COLON WITH ASSIGNMENT //E2 REMOVE ASSIGNMENT
     static {
         IDENTIFIER_FOLLOW_SET.addAll(DeclarationsParser.VAR_START_SET);
     }
 
     // Synchronization set for the , token.
     private static final EnumSet<SubCTokenType> COMMA_SET =
-        EnumSet.of(COMMA, ASSIGNMENT, IDENTIFIER, SEMICOLON); //REPLACE COLON WITH ASSIGNMENT
+        EnumSet.of(COMMA, IDENTIFIER, SEMICOLON); //REPLACE COLON WITH ASSIGNMENT //E2 REMOVE ASSIGNMENT
 
     /**
      * Parse a sublist of identifiers and their type specification.
@@ -125,6 +125,9 @@ public class VariableDeclarationsParser extends DeclarationsParser
     {
         ArrayList<SymTabEntry> sublist = new ArrayList<SymTabEntry>();
 
+        // Parse the type specification.
+        TypeSpec type = parseTypeSpec(token);
+        
         do {
             token = synchronize(IDENTIFIER_START_SET);
             SymTabEntry id = parseIdentifier(token);
@@ -149,8 +152,7 @@ public class VariableDeclarationsParser extends DeclarationsParser
             }
         } while (!IDENTIFIER_FOLLOW_SET.contains(token.getType()));
 
-        // Parse the type specification.
-        TypeSpec type = parseTypeSpec(token);
+        
 
         // Assign the type specification to each identifier in the list.
         for (SymTabEntry variableId : sublist) {
@@ -196,7 +198,7 @@ public class VariableDeclarationsParser extends DeclarationsParser
 
     // Synchronization set for the : token.
     private static final EnumSet<SubCTokenType> COLON_SET =
-        EnumSet.of(ASSIGNMENT, SEMICOLON); //REPLACE COLON WITH ASSIGNMENT
+        EnumSet.of(SEMICOLON); //REPLACE COLON WITH ASSIGNMENT //E2 REMOVE ASSIGNMENT
 
     /**
      * Parse the type specification.
@@ -208,13 +210,13 @@ public class VariableDeclarationsParser extends DeclarationsParser
         throws Exception
     {
         // Synchronize on the : token.
-        token = synchronize(COLON_SET);
+        /*token = synchronize(COLON_SET);
         if (token.getType() == ASSIGNMENT) { //REPLACE COLON WITH ASSIGNMENT
             token = nextToken(); // consume the :
         }
         else {
             errorHandler.flag(token, MISSING_COLON, this);
-        }
+        }*/
 
         // Parse the type specification.
         TypeSpecificationParser typeSpecificationParser =
