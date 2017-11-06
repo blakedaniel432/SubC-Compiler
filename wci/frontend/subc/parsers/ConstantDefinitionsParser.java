@@ -93,7 +93,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
 
             // Synchronize on the = token.
             token = synchronize(EQUALS_SET);
-            if (token.getType() == ASSIGNMENT) {
+            if (token.getType() == ASSIGNMENT) { //REPLACED EQUALS WITH ASSIGNMENT
                 token = nextToken();  // consume the =
             }
             else {
