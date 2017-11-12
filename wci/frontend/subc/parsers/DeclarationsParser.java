@@ -31,7 +31,7 @@ public class DeclarationsParser extends SubCParserTD
     }
 
     static final EnumSet<SubCTokenType> DECLARATION_START_SET =
-        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE, INTEGER, CHAR); //ADDED INT AND CHAR
+        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE, INT, CHAR); //ADDED INT AND CHAR
 
     static final EnumSet<SubCTokenType> TYPE_START_SET =
         DECLARATION_START_SET.clone();

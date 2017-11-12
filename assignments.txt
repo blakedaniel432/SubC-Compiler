@@ -1,7 +1,7 @@
 const TWO = 2;
 
-var centigrade, five, ratio, fahrenheit, number, root, dze = int; 
-	character = char;
+var int centigrade, five, ratio, fahrenheit, number, root, dze; 
+	char character;
 {
     { //Temperature conversions
         five = -1 + TWO - 3 + 4 + 3;
