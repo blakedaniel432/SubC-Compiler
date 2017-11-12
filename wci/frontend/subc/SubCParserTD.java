@@ -138,6 +138,7 @@ public class SubCParserTD extends Parser
     	//System.out.println(syncSet);
         Token token = currentToken();
 
+        System.out.println(token.getType());
         // If the current token is not in the synchronization set,
         // then it is unexpected and the parser must recover.
         if (!syncSet.contains(token.getType())) {
