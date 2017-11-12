@@ -61,7 +61,7 @@ public class IfStatementParser extends StatementParser
         // Synchronize at the THEN.
         token = synchronize(THEN_SET);
         if (token.getType() == LEFT_BRACE) { //changed THEN to LEFT_BRACE
-            //token = nextToken();  // consume the THEN
+            token = nextToken();  // consume the THEN
         }
         else {
             errorHandler.flag(token, MISSING_THEN, this);

@@ -77,7 +77,8 @@ public class WhileStatementParser extends StatementParser
         // Parse the statement.
         // The LOOP node adopts the statement subtree as its second child.
         StatementParser statementParser = new StatementParser(this);
-        loopNode.addChild(statementParser.parse(token));
+        statementParser.parseList(token, loopNode, RIGHT_BRACE, MISSING_END); //possible fix
+        //loopNode.addChild(statementParser.parse(token)); //default
 
         return loopNode;
     }

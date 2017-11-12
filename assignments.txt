@@ -1,6 +1,7 @@
 const TWO = 2;
-var int centigrade, five, ratio, fahrenheit, number, root, dze; 
-	char character;
+
+var centigrade, five, ratio, fahrenheit, number, root, dze = int; 
+	character = char;
 {
     { //Temperature conversions
         five = -1 + TWO - 3 + 4 + 3;
@@ -12,6 +13,10 @@ var int centigrade, five, ratio, fahrenheit, number, root, dze;
         
         if (ratio == 5/9.0) { 
         	ratio = 1;
+        	
+        	if (ratio == 1) { 
+        		ratio = five/9.0;
+        	}
         }
         
         
