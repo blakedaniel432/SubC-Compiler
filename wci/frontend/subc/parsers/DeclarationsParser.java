@@ -31,13 +31,13 @@ public class DeclarationsParser extends SubCParserTD
     }
 
     static final EnumSet<SubCTokenType> DECLARATION_START_SET =
-        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE, INT, CHAR); //ADDED INT AND CHAR
+        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE, IDENTIFIER); //ADDED INT AND CHAR E2// REMOVED
 
     static final EnumSet<SubCTokenType> TYPE_START_SET =
         DECLARATION_START_SET.clone();
-    static {
+    /*static {
         TYPE_START_SET.remove(CONST);
-    }
+    }*/
 
     static final EnumSet<SubCTokenType> VAR_START_SET =
     	TYPE_START_SET.clone();
@@ -47,9 +47,9 @@ public class DeclarationsParser extends SubCParserTD
     
     static final EnumSet<SubCTokenType> ROUTINE_START_SET =
         VAR_START_SET.clone();
-    static {
+    /*static {
         ROUTINE_START_SET.remove(VAR);
-    }
+    }*/
 
     /**
      * Parse declarations.
@@ -82,8 +82,8 @@ public class DeclarationsParser extends SubCParserTD
 
         token = synchronize(VAR_START_SET);
 
-        if (token.getType() == VAR) {
-            token = nextToken();  // consume VAR
+        if (token.getType() == IDENTIFIER) {
+            //token = nextToken();  // consume VAR
 
             VariableDeclarationsParser variableDeclarationsParser =
                 new VariableDeclarationsParser(this);

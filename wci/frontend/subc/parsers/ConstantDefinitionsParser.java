@@ -70,11 +70,14 @@ public class ConstantDefinitionsParser extends DeclarationsParser
     public void parse(Token token)
         throws Exception
     {
+        // Parse the type specification. //FIND OUT DATA TYPE BEFORE
+        TypeSpec constantType = parseTypeSpec(token);
+        
         token = synchronize(IDENTIFIER_SET);
 
         // Loop to parse a sequence of constant definitions
         // separated by semicolons.
-        while (token.getType() == IDENTIFIER) {
+        if (token.getType() == IDENTIFIER) { //CHANGED TO IF FROM WHILE
             String name = token.getText(); //REMOVED .toLowerCase()
             SymTabEntry constantId = symTabStack.lookupLocal(name);
 
@@ -101,7 +104,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
             }
 
             // Parse the constant value.
-            Token constantToken = token;
+            //Token constantToken = token;
             Object value = parseConstant(token);
 
             // Set identifier to be a constant and set its value.
@@ -109,11 +112,11 @@ public class ConstantDefinitionsParser extends DeclarationsParser
                 constantId.setDefinition(CONSTANT);
                 constantId.setAttribute(CONSTANT_VALUE, value);
 
-                // Set the constant's type.
+                /*// Set the constant's type.
                 TypeSpec constantType =
                     constantToken.getType() == IDENTIFIER
                         ? getConstantType(constantToken)
-                        : getConstantType(value);
+                        : getConstantType(value);*/
                 constantId.setTypeSpec(constantType);
             }
 
@@ -202,7 +205,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
      */
     protected Object parseIdentifierConstant(Token token, TokenType sign)
         throws Exception
-    {
+    {     
         String name = token.getText(); //REMOVED .toLowerCase()
         SymTabEntry id = symTabStack.lookup(name);
 
@@ -308,4 +311,25 @@ public class ConstantDefinitionsParser extends DeclarationsParser
             return null;
         }
     }
+    
+    //BORROWED FROM VariableDeclarationsParser
+    protected TypeSpec parseTypeSpec(Token token)
+            throws Exception
+        {
+            // Synchronize on the : token.
+            /*token = synchronize(COLON_SET);
+            if (token.getType() == ASSIGNMENT) { //REPLACE COLON WITH ASSIGNMENT
+                token = nextToken(); // consume the :
+            }
+            else {
+                errorHandler.flag(token, MISSING_COLON, this);
+            }*/
+
+            // Parse the type specification.
+            TypeSpecificationParser typeSpecificationParser =
+                new TypeSpecificationParser(this);
+            TypeSpec type = typeSpecificationParser.parse(token);
+
+            return type;
+        }
 }
