@@ -1,5 +1,4 @@
 const int TWO = 2;
-//const int THREE = 3;
 
 int centigrade;
 int five;
@@ -11,6 +10,7 @@ int dze;
 char character;
 
 {
+	
     { //Temperature conversions
         five = -1 + TWO - 3 + 4 + 3;
         ratio = five/9.0;

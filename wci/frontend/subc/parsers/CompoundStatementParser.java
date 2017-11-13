@@ -37,7 +37,7 @@ public class CompoundStatementParser extends StatementParser
         throws Exception
     {
         token = nextToken();  // consume the BEGIN
-
+       
         // Create the COMPOUND node.
         ICodeNode compoundNode = ICodeFactory.createICodeNode(COMPOUND);
 

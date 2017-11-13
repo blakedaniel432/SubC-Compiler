@@ -53,7 +53,7 @@ public class BlockParser extends SubCParserTD
         if (tokenType == LEFT_BRACE) {
             rootNode = statementParser.parse(token);
         }
-
+        
         // Missing BEGIN: Attempt to parse anyway if possible.
         else {
             errorHandler.flag(token, MISSING_BEGIN, this);
@@ -63,7 +63,7 @@ public class BlockParser extends SubCParserTD
                 statementParser.parseList(token, rootNode, RIGHT_BRACE, MISSING_END);
             }
         }
-
+ 
         return rootNode;
     }
 }

@@ -84,11 +84,13 @@ public class AssignmentStatementParser extends StatementParser
 
         assignNode.setTypeSpec(targetType);
 		
-		//token = currentToken();
+        //SEMI-COLON FIX
+		token = currentToken();
 		
 		if(token.getType() != SEMICOLON) {
 			errorHandler.flag(token, MISSING_SEMICOLON, this);
-		
+		}
         return assignNode;
+
     }
 }

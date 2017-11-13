@@ -50,7 +50,7 @@ public class StatementParser extends SubCParserTD
         throws Exception
     {
         ICodeNode statementNode = null;
-
+      
         switch ((SubCTokenType) token.getType()) {
 
             case LEFT_BRACE: {
@@ -117,11 +117,11 @@ public class StatementParser extends SubCParserTD
                              SubCTokenType terminator,
                              SubCErrorCode errorCode)
         throws Exception
-    {
+    {        
         // Synchronization set for the terminator.
         EnumSet<SubCTokenType> terminatorSet = STMT_START_SET.clone();
         terminatorSet.add(terminator);
-
+        
         // Loop to parse each statement until the END token
         // or the end of the source file.
         while (!(token instanceof EofToken) &&

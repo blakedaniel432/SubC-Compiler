@@ -43,7 +43,7 @@ public class VariableParser extends StatementParser
 
     // Synchronization set to start a subscript or a field.
     private static final EnumSet<SubCTokenType> SUBSCRIPT_FIELD_START_SET =
-        EnumSet.of(LEFT_BRACKET, DOT);
+        EnumSet.of(LEFT_BRACKET); //REMOVED DOT
 
     /**
      * Parse a variable.
@@ -55,7 +55,7 @@ public class VariableParser extends StatementParser
         throws Exception
     {
         // Look up the identifier in the symbol table stack.
-        String name = token.getText().toLowerCase();
+        String name = token.getText(); // REMOVED .toLowerCase()
         SymTabEntry variableId = symTabStack.lookup(name);
 
         // If not found, flag the error and enter the identifier

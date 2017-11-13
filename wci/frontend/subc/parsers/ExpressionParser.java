@@ -335,7 +335,7 @@ public class ExpressionParser extends StatementParser
                     if (TypeChecker.areBothInteger(resultType, factorType) ||
                         TypeChecker.isAtLeastOneReal(resultType, factorType))
                     {
-                        resultType = Predefined.realType;
+                        resultType = Predefined.integerType; //CHANGED FROM .realType to .integerType
                     }
                     else {
                         errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
@@ -344,7 +344,7 @@ public class ExpressionParser extends StatementParser
                     break;
                 }
 
-                case DIV:
+                //case DIV:
                 case MOD: {
                     // Both operands integer ==> integer result.
                     if (TypeChecker.areBothInteger(resultType, factorType)) {
@@ -518,7 +518,7 @@ public class ExpressionParser extends StatementParser
         ICodeNode rootNode = null;
 
         // Look up the identifier in the symbol table stack.
-        String name = token.getText().toLowerCase();
+        String name = token.getText(); //REMOVED .toLowerCase()
         SymTabEntry id = symTabStack.lookup(name);
 
         // Undefined.

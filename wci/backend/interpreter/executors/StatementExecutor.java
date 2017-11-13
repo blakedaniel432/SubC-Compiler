@@ -65,10 +65,10 @@ public class StatementExecutor extends Executor
                 return ifExecutor.execute(node);
             }
 
-            case SELECT: {
+            /*case SELECT: {
                 SelectExecutor selectExecutor = new SelectExecutor(this);
                 return selectExecutor.execute(node);
-            }
+            }*/
 
             case NO_OP: return null;
 
