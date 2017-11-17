@@ -44,7 +44,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
 
     // Synchronization set for starting a constant.
     static final EnumSet<SubCTokenType> CONSTANT_START_SET =
-        EnumSet.of(IDENTIFIER, INT, REAL, PLUS, MINUS, STRING, SEMICOLON);
+        EnumSet.of(IDENTIFIER, INTEGER, REAL, PLUS, MINUS, STRING, SEMICOLON); //POSSIBLEY ADD CHAR
 
     // Synchronization set for the = token.
     private static final EnumSet<SubCTokenType> EQUALS_SET =
@@ -52,13 +52,15 @@ public class ConstantDefinitionsParser extends DeclarationsParser
     static {
         EQUALS_SET.add(ASSIGNMENT);
         EQUALS_SET.add(SEMICOLON);
+		EQUALS_SET.add(INT); //ADDED INT, CHAR
+		EQUALS_SET.add(CHAR);
     }
 
     // Synchronization set for the start of the next definition or declaration.
     private static final EnumSet<SubCTokenType> NEXT_START_SET =
         DeclarationsParser.TYPE_START_SET.clone();
     static {
-        NEXT_START_SET.add(SEMICOLON);
+        //NEXT_START_SET.add(SEMICOLON); REMOVED SEMICOLON
         NEXT_START_SET.add(IDENTIFIER);
     }
 
@@ -77,7 +79,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
 
         // Loop to parse a sequence of constant definitions
         // separated by semicolons.
-        if (token.getType() == IDENTIFIER) { //CHANGED TO IF FROM WHILE
+        while (token.getType() == IDENTIFIER) { //CHANGED TO IF FROM WHILE //REVERT CHANGE
             String name = token.getText(); //REMOVED .toLowerCase()
             SymTabEntry constantId = symTabStack.lookupLocal(name);
 
@@ -168,7 +170,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
                 return parseIdentifierConstant(token, sign);
             }
 
-            case INT: {
+            case INTEGER: {
                 Integer value = (Integer) token.getValue();
                 nextToken();  // consume the number
                 return sign == MINUS ? -value : value;

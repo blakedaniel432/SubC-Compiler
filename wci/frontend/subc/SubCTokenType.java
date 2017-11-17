@@ -16,7 +16,7 @@ import wci.frontend.TokenType;
 public enum SubCTokenType implements TokenType
 {
     // Reserved words.
-	IF, CONST, VAR, PROCEDURE, FUNCTION, DOUBLE, WHILE, MAIN, ELSE, RETURN,
+	IF, INT, CHAR, CONST, VAR, PROCEDURE, FUNCTION, DOUBLE, WHILE, MAIN, ELSE, RETURN,
 
     // Special symbols.
     PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), MOD("%"),
@@ -26,7 +26,7 @@ public enum SubCTokenType implements TokenType
     LEFT_BRACKET("["), RIGHT_BRACKET("]"), LEFT_BRACE("{"), RIGHT_BRACE("}"),
     COMMA(","), AND("&&"), OR("||"), NOT("!"), SYS("#"),
 
-    IDENTIFIER, INT, REAL, CHAR, STRING,
+    IDENTIFIER, INTEGER, REAL, CHARACTER, STRING,
     ERROR, END_OF_FILE;
 
     private static final int FIRST_RESERVED_INDEX = IF.ordinal();

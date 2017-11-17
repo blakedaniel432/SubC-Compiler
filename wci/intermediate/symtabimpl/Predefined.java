@@ -12,7 +12,7 @@ import static wci.intermediate.typeimpl.TypeKeyImpl.*;
 /**
  * <h1>Predefined</h1>
  *
- * <p>Enter the predefined Pascal types, identifiers, and constants
+ * <p>Enter the predefined SubC types, identifiers, and constants
  * into the symbol table.</p>
  *
  * <p>Copyright (c) 2009 by Ronald Mak</p>
@@ -52,7 +52,7 @@ public class Predefined
     private static void initializeTypes(SymTabStack symTabStack)
     {
         // Type integer.
-        integerId = symTabStack.enterLocal("int");
+        integerId = symTabStack.enterLocal("integer");
         integerType = TypeFactory.createType(SCALAR);
         integerType.setIdentifier(integerId);
         integerId.setDefinition(DefinitionImpl.TYPE);

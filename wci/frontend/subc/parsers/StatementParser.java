@@ -33,11 +33,11 @@ public class StatementParser extends SubCParserTD
     // Synchronization set for starting a statement.
     protected static final EnumSet<SubCTokenType> STMT_START_SET =
         EnumSet.of(LEFT_BRACE, SubCTokenType.IF, WHILE,
-                   IDENTIFIER, SEMICOLON);
+                   IDENTIFIER, SEMICOLON, INT, CHAR); //ADDED INT, CHAR
 
     // Synchronization set for following a statement.
     protected static final EnumSet<SubCTokenType> STMT_FOLLOW_SET =
-        EnumSet.of(SEMICOLON, RIGHT_BRACE, ELSE);
+        EnumSet.of(SEMICOLON, RIGHT_BRACE, ELSE, WHILE); //ADDED WHILE
 
     /**
      * Parse a statement.
@@ -65,6 +65,21 @@ public class StatementParser extends SubCParserTD
                 AssignmentStatementParser assignmentParser =
                     new AssignmentStatementParser(this);
                 statementNode = assignmentParser.parse(token);
+                break;
+            }
+			
+			case INT:{
+                DeclarationsParser declarationsParser =
+                    new DeclarationsParser(this);
+                declarationsParser.parse(token);
+                statementNode = null;
+                break;
+            }
+            case CHAR:{
+                DeclarationsParser declarationsParser =
+                    new DeclarationsParser(this);
+                declarationsParser.parse(token);
+                statementNode = null;
                 break;
             }
 

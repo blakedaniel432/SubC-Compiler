@@ -56,7 +56,7 @@ public class SubCNumberToken extends SubCToken
         //boolean sawDotDot = false;     // true if saw .. token
         char currentChar;              // current character
 
-        type = INT;  // assume INTEGER token type for now
+        type = INTEGER;  // assume INTEGER token type for now
 
         // Extract the digits of the whole part of the number.
         wholeDigits = unsignedIntegerDigits(textBuffer);
@@ -104,7 +104,7 @@ public class SubCNumberToken extends SubCToken
         }
 
         // Compute the value of an integer number token.
-        if (type == INT) {
+        if (type == INTEGER) {
             int integerValue = computeIntegerValue(wholeDigits);
 
             if (type != ERROR) {

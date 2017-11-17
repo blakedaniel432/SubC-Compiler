@@ -37,11 +37,13 @@ class SimpleTypeParser extends TypeSpecificationParser
 
     // Synchronization set for starting a simple type specification.
     static final EnumSet<SubCTokenType> SIMPLE_TYPE_START_SET =
-        ConstantDefinitionsParser.CONSTANT_START_SET.clone();
+        //ConstantDefinitionsParser.CONSTANT_START_SET.clone();
+		DeclarationsParser.TYPE_START_SET.clone();
     static {
         //SIMPLE_TYPE_START_SET.add(LEFT_PAREN);
         SIMPLE_TYPE_START_SET.add(COMMA);
         SIMPLE_TYPE_START_SET.add(SEMICOLON);
+		SIMPLE_TYPE_START_SET.add(IDENTIFIER); //ADDED IDENTIFIER
     }
 
     /**
@@ -64,7 +66,18 @@ class SimpleTypeParser extends TypeSpecificationParser
 
                 if (id != null) {
                     Definition definition = id.getDefinition();
+					
+					//ADDED INT, CHAR
+					case INT:{
+						nextToken();
+						return Predefined.integerType;
+					}
 
+					case CHAR:{
+						nextToken();
+						return Predefined.charType;
+					}
+					
                     // It's either a type identifier
                     // or the start of a subrange type.
                     if (definition == DefinitionImpl.TYPE) {
@@ -109,7 +122,8 @@ class SimpleTypeParser extends TypeSpecificationParser
                 /*SubrangeTypeParser subrangeTypeParser =
                     new SubrangeTypeParser(this);
                 return subrangeTypeParser.parse(token);*/
-            	return null; //NOT SURE
+            	//return null; //NOT SURE
+				return Predefined.integerType;
             }
         }
     }
