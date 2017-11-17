@@ -64,11 +64,7 @@ class SimpleTypeParser extends TypeSpecificationParser
 
                 if (id != null) {
                     Definition definition = id.getDefinition();
-<<<<<<< HEAD
-					
-=======
-
->>>>>>> parent of 70e6220... Start of fixes for local variables
+                    
                     // It's either a type identifier
                     // or the start of a subrange type.
                     if (definition == DefinitionImpl.TYPE) {
@@ -102,17 +98,6 @@ class SimpleTypeParser extends TypeSpecificationParser
                     new EnumerationTypeParser(this);
                 return enumerationTypeParser.parse(token);
             }*/
-
-            //ADDED INT, CHAR
-			case INT:{
-				nextToken();
-				return Predefined.integerType;
-			}
-
-			case CHAR:{
-				nextToken();
-				return Predefined.charType;
-			}
 			
             case COMMA:
             case SEMICOLON: {

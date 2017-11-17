@@ -82,11 +82,7 @@ public class DeclarationsParser extends SubCParserTD
 
         token = synchronize(VAR_START_SET);
 
-<<<<<<< HEAD
-        if (VAR_START_SET.contains(token.getType())) {
-=======
         if (token.getType() == IDENTIFIER) {
->>>>>>> parent of 70e6220... Start of fixes for local variables
             //token = nextToken();  // consume VAR
 
             VariableDeclarationsParser variableDeclarationsParser =
