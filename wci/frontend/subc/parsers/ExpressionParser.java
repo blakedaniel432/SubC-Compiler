@@ -38,7 +38,7 @@ public class ExpressionParser extends StatementParser
 
     // Synchronization set for starting an expression.
     static final EnumSet<SubCTokenType> EXPR_START_SET =
-        EnumSet.of(PLUS, MINUS, IDENTIFIER, INTEGER, REAL, STRING,
+        EnumSet.of(PLUS, MINUS, IDENTIFIER, INT, REAL, STRING,
                    SubCTokenType.NOT, LEFT_PAREN);
 
     /**
@@ -397,7 +397,7 @@ public class ExpressionParser extends StatementParser
                 return parseIdentifier(token);
             }
 
-            case INTEGER: {
+            case INT: {
                 // Create an INTEGER_CONSTANT node as the root node.
                 rootNode = ICodeFactory.createICodeNode(INTEGER_CONSTANT);
                 rootNode.setAttribute(VALUE, token.getValue());

@@ -31,7 +31,7 @@ public class DeclarationsParser extends SubCParserTD
     }
 
     static final EnumSet<SubCTokenType> DECLARATION_START_SET =
-        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE, INT, CHAR); //ADDED IDENTIFIER
+        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE, IDENTIFIER); //ADDED IDENTIFIER
 
     static final EnumSet<SubCTokenType> TYPE_START_SET =
         DECLARATION_START_SET.clone();
@@ -49,8 +49,6 @@ public class DeclarationsParser extends SubCParserTD
         VAR_START_SET.clone();
     /*static {
         ROUTINE_START_SET.remove(VAR);
-		ROUTINE_START_SET.remove(INT);
-		ROUTINE_START_SET.remove(CHAR);
     }*/
 
     /**
@@ -62,7 +60,7 @@ public class DeclarationsParser extends SubCParserTD
     public void parse(Token token)
         throws Exception
     {
-        //token = synchronize(DECLARATION_START_SET); //REMOVE SYNC
+        token = synchronize(DECLARATION_START_SET);
 
         if (token.getType() == CONST) {
             token = nextToken();  // consume CONST
@@ -82,9 +80,13 @@ public class DeclarationsParser extends SubCParserTD
             typeDefinitionsParser.parse(token);
         }*/
 
-        //token = synchronize(VAR_START_SET);
+        token = synchronize(VAR_START_SET);
 
+<<<<<<< HEAD
         if (VAR_START_SET.contains(token.getType())) {
+=======
+        if (token.getType() == IDENTIFIER) {
+>>>>>>> parent of 70e6220... Start of fixes for local variables
             //token = nextToken();  // consume VAR
 
             VariableDeclarationsParser variableDeclarationsParser =
@@ -93,6 +95,6 @@ public class DeclarationsParser extends SubCParserTD
             variableDeclarationsParser.parse(token);
         }
 
-        //token = synchronize(ROUTINE_START_SET);
+        token = synchronize(ROUTINE_START_SET);
     }
 }
