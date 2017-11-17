@@ -1,4 +1,4 @@
-const int TWO = 2;
+//const int TWO = 2;
 
 int centigrade;
 int five;

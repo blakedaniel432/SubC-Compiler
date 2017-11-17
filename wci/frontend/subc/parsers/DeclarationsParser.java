@@ -84,7 +84,7 @@ public class DeclarationsParser extends SubCParserTD
 
         //token = synchronize(VAR_START_SET);
 
-        else if (VAR_START_SET.contains(token.getType()) {
+        if (VAR_START_SET.contains(token.getType())) {
             //token = nextToken();  // consume VAR
 
             VariableDeclarationsParser variableDeclarationsParser =

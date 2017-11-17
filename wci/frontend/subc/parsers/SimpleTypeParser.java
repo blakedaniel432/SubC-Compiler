@@ -67,17 +67,6 @@ class SimpleTypeParser extends TypeSpecificationParser
                 if (id != null) {
                     Definition definition = id.getDefinition();
 					
-					//ADDED INT, CHAR
-					case INT:{
-						nextToken();
-						return Predefined.integerType;
-					}
-
-					case CHAR:{
-						nextToken();
-						return Predefined.charType;
-					}
-					
                     // It's either a type identifier
                     // or the start of a subrange type.
                     if (definition == DefinitionImpl.TYPE) {
@@ -112,6 +101,17 @@ class SimpleTypeParser extends TypeSpecificationParser
                 return enumerationTypeParser.parse(token);
             }*/
 
+            //ADDED INT, CHAR
+			case INT:{
+				nextToken();
+				return Predefined.integerType;
+			}
+
+			case CHAR:{
+				nextToken();
+				return Predefined.charType;
+			}
+			
             case COMMA:
             case SEMICOLON: {
                 errorHandler.flag(token, INVALID_TYPE, this);
