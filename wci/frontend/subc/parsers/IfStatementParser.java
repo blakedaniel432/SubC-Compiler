@@ -6,11 +6,12 @@ import wci.frontend.*;
 import wci.frontend.subc.*;
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
+import wci.intermediate.symtabimpl.*;
+import wci.intermediate.typeimpl.*;
 
 import static wci.frontend.subc.SubCTokenType.*;
 import static wci.frontend.subc.SubCErrorCode.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
-import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
 /**
  * <h1>IfStatementParser</h1>
@@ -37,7 +38,7 @@ public class IfStatementParser extends StatementParser {
 		super(parent);
 	}
 
-	// Synchronization set for THEN.
+	// Synchronization set for LEFT_BRACE.
 	private static final EnumSet<SubCTokenType> THEN_SET = StatementParser.STMT_START_SET.clone();
 	static {
 		THEN_SET.add(LEFT_BRACE);
@@ -62,12 +63,19 @@ public class IfStatementParser extends StatementParser {
 		// Parse the expression.
 		// The IF node adopts the expression subtree as its first child.
 		ExpressionParser expressionParser = new ExpressionParser(this);
-		ifNode.addChild(expressionParser.parse(token));
+		ICodeNode exprNode = expressionParser.parse(token);
+		ifNode.addChild(exprNode);
 
-		// Synchronize at the THEN.
+		// Type check: The expression type must be boolean.
+		TypeSpec exprType = exprNode != null ? exprNode.getTypeSpec() : Predefined.undefinedType;
+		if (!TypeChecker.isBoolean(exprType)) {
+			errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
+		}
+
+		// Synchronize at the LEFT_BRACE.
 		token = synchronize(THEN_SET);
 		if (token.getType() == LEFT_BRACE) {
-			// token = nextToken();
+			//token = nextToken(); // consume the LEFT_BRACE
 		} else {
 			errorHandler.flag(token, MISSING_LEFT_BRACE, this);
 		}

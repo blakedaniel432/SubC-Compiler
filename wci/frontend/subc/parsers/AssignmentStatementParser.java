@@ -5,11 +5,12 @@ import java.util.EnumSet;
 import wci.frontend.*;
 import wci.frontend.subc.*;
 import wci.intermediate.*;
+import wci.intermediate.symtabimpl.*;
+import wci.intermediate.typeimpl.*;
 
 import static wci.frontend.subc.SubCTokenType.*;
 import static wci.frontend.subc.SubCErrorCode.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
-import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
 /**
  * <h1>AssignmentStatementParser</h1>
@@ -56,25 +57,15 @@ public class AssignmentStatementParser extends StatementParser {
 		// Create the ASSIGN node.
 		ICodeNode assignNode = ICodeFactory.createICodeNode(ASSIGN);
 
-		// Look up the target identifer in the symbol table stack.
-		// Enter the identifier into the table if it's not found.
-		String targetName = token.getText(); //REMOVED .toLowerCase()
-		SymTabEntry targetId = symTabStack.lookup(targetName);
-		if (targetId == null) {
-			targetId = symTabStack.enterLocal(targetName);
-		}
-		targetId.appendLineNumber(token.getLineNumber());
-
-		token = nextToken(); // consume the identifier token
-
-		// Create the variable node and set its name attribute.
-		ICodeNode variableNode = ICodeFactory.createICodeNode(VARIABLE);
-		variableNode.setAttribute(ID, targetId);
+		// Parse the target variable.
+		VariableParser variableParser = new VariableParser(this);
+		ICodeNode targetNode = variableParser.parse(token);
+		TypeSpec targetType = targetNode != null ? targetNode.getTypeSpec() : Predefined.undefinedType;
 
 		// The ASSIGN node adopts the variable node as its first child.
-		assignNode.addChild(variableNode);
+		assignNode.addChild(targetNode);
 
-		// Look for the = token.
+		// Synchronize on the = token.
 		token = synchronize(EQUALS_SET);
 		if (token.getType() == EQUALS) {
 			token = nextToken(); // consume the =
@@ -85,13 +76,23 @@ public class AssignmentStatementParser extends StatementParser {
 		// Parse the expression. The ASSIGN node adopts the expression's
 		// node as its second child.
 		ExpressionParser expressionParser = new ExpressionParser(this);
-		assignNode.addChild(expressionParser.parse(token));
+		ICodeNode exprNode = expressionParser.parse(token);
+		assignNode.addChild(exprNode);
 
-		// check whether the last token of the statment is a ;
+		// Type check: Assignment compatible?
+		TypeSpec exprType = exprNode != null ? exprNode.getTypeSpec() : Predefined.undefinedType;
+		if (!TypeChecker.areAssignmentCompatible(targetType, exprType)) {
+			errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
+		}
+
+		assignNode.setTypeSpec(targetType);
+		
+		//CHECK FOR SEMICOLON
 		token = currentToken();
 		if (token.getType() != SEMICOLON) {
 			errorHandler.flag(token, MISSING_SEMICOLON, this);
 		}
+		
 		return assignNode;
 	}
 }

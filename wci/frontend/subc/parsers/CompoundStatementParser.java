@@ -7,6 +7,7 @@ import wci.intermediate.*;
 import static wci.frontend.subc.SubCTokenType.*;
 import static wci.frontend.subc.SubCErrorCode.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
+import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
 /**
  * <h1>CompoundStatementParser</h1>
@@ -48,7 +49,7 @@ public class CompoundStatementParser extends StatementParser {
 		// Create the COMPOUND node.
 		ICodeNode compoundNode = ICodeFactory.createICodeNode(COMPOUND);
 
-		// Parse the statement list terminated by the END token.
+		// Parse the statement list terminated by the RIGHT_BRACE token.
 		StatementParser statementParser = new StatementParser(this);
 		statementParser.parseList(token, compoundNode, RIGHT_BRACE, MISSING_END);
 

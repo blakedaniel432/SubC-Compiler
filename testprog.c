@@ -1,4 +1,4 @@
-{
+{ 
 	int centigrade;
 	int five;
 	int ratio;

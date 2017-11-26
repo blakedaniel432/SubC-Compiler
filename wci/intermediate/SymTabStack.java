@@ -3,7 +3,7 @@ package wci.intermediate;
 import java.util.ArrayList;
 
 /**
- * <h1>SymTabStack</h1>
+ * <h1>SymTabImpl</h1>
  *
  * <p>
  * The interface for the symbol table stack.

@@ -32,6 +32,21 @@ public interface ICodeNode {
 	public ICodeNode getParent();
 
 	/**
+	 * Set the type specification of this node.
+	 * 
+	 * @param typeSpec
+	 *            the type sprcification to set.
+	 */
+	public void setTypeSpec(TypeSpec typeSpec);
+
+	/**
+	 * Return the type specification of this node.
+	 * 
+	 * @return the type specification.
+	 */
+	public TypeSpec getTypeSpec();
+
+	/**
 	 * Add a child node.
 	 * 
 	 * @param node
