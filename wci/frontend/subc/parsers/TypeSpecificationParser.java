@@ -17,59 +17,53 @@ import static wci.intermediate.typeimpl.TypeKeyImpl.*;
 /**
  * <h1>TypeSpecificationParser</h1>
  *
- * <p>Parse a SubC type specification.</p>
+ * <p>
+ * Parse a SubC type specification.
+ * </p>
  *
- * <p>Copyright (c) 2009 by Ronald Mak</p>
- * <p>For instructional purposes only.  No warranties.</p>
+ * <p>
+ * Copyright (c) 2009 by Ronald Mak
+ * </p>
+ * <p>
+ * For instructional purposes only. No warranties.
+ * </p>
  */
-class TypeSpecificationParser extends SubCParserTD
-{
-    /**
-     * Constructor.
-     * @param parent the parent parser.
-     */
-    protected TypeSpecificationParser(SubCParserTD parent)
-    {
-        super(parent);
-    }
+class TypeSpecificationParser extends SubCParserTD {
+	/**
+	 * Constructor.
+	 * 
+	 * @param parent
+	 *            the parent parser.
+	 */
+	protected TypeSpecificationParser(SubCParserTD parent) {
+		super(parent);
+	}
 
-    // Synchronization set for starting a type specification.
-    static final EnumSet<SubCTokenType> TYPE_START_SET =
-        SimpleTypeParser.SIMPLE_TYPE_START_SET.clone();
-    static {
-        // TYPE_START_SET.add(SubCTokenType.ARRAY);
-        // TYPE_START_SET.add(SubCTokenType.RECORD);
-        TYPE_START_SET.add(SEMICOLON);
-    }
+	// Synchronization set for starting a type specification.
+	static final EnumSet<SubCTokenType> TYPE_START_SET = SimpleTypeParser.SIMPLE_TYPE_START_SET.clone();
+	static {
+		TYPE_START_SET.add(SEMICOLON);
+	}
 
-    /**
-     * Parse a SubC type specification.
-     * @param token the current token.
-     * @return the type specification.
-     * @throws Exception if an error occurred.
-     */
-    public TypeSpec parse(Token token)
-        throws Exception
-    {
-        // Synchronize at the start of a type specification.
-        token = synchronize(TYPE_START_SET);
+	/**
+	 * Parse a SubC type specification.
+	 * 
+	 * @param token
+	 *            the current token.
+	 * @return the type specification.
+	 * @throws Exception
+	 *             if an error occurred.
+	 */
+	public TypeSpec parse(Token token) throws Exception {
+		// Synchronize at the start of a type specification.
+		token = synchronize(TYPE_START_SET);
 
+		switch ((SubCTokenType) token.getType()) {
 
-        switch ((SubCTokenType) token.getType()) {
-            // case ARRAY: {
-            //     ArrayTypeParser arrayTypeParser = new ArrayTypeParser(this);
-            //     return arrayTypeParser.parse(token);
-            // }
-
-            // case RECORD: {
-            //     RecordTypeParser recordTypeParser = new RecordTypeParser(this);
-            //     return recordTypeParser.parse(token);
-            // }
-
-            default: {
-                SimpleTypeParser simpleTypeParser = new SimpleTypeParser(this);
-                return simpleTypeParser.parse(token);
-            }
-        }
-    }
+		default: {
+			SimpleTypeParser simpleTypeParser = new SimpleTypeParser(this);
+			return simpleTypeParser.parse(token);
+		}
+		}
+	}
 }

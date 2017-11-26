@@ -13,292 +13,279 @@ import static wci.message.MessageType.*;
 /**
  * <h1>SubC</h1>
  *
- * <p>Compile or interpret a SubC source program.</p>
+ * <p>
+ * Compile or interpret a SubC source program.
+ * </p>
  *
- * <p>Copyright (c) 2009 by Ronald Mak</p>
- * <p>For instructional purposes only.  No warranties.</p>
+ * <p>
+ * Copyright (c) 2009 by Ronald Mak
+ * </p>
+ * <p>
+ * For instructional purposes only. No warranties.
+ * </p>
  */
-public class SubC
-{
-    private Parser parser;            // language-independent parser
-    private Source source;            // language-independent scanner
-    private ICode iCode;              // generated intermediate code
-    private SymTabStack symTabStack;  // symbol table stack
-    private Backend backend;          // backend
-    /**
-     * Compile or interpret a SubC source program.
-     * @param operation either "compile" or "execute".
-     * @param filePath the source file path.
-     * @param flags the command line flags.
-     */
-    public SubC(String operation, String filePath, String flags)
-    {
-        try {
-            boolean intermediate = flags.indexOf('i') > -1;
-            boolean xref         = flags.indexOf('x') > -1;
+public class SubC {
+	private Parser parser; // language-independent parser
+	private Source source; // language-independent scanner
+	private ICode iCode; // generated intermediate code
+	private SymTabStack symTabStack; // symbol table stack
+	private Backend backend; // backend
 
-            source = new Source(new BufferedReader(new FileReader(filePath)));
-            source.addMessageListener(new SourceMessageListener());
+	/**
+	 * Compile or interpret a SubC source program.
+	 * 
+	 * @param operation
+	 *            either "compile" or "execute".
+	 * @param filePath
+	 *            the source file path.
+	 * @param flags
+	 *            the command line flags.
+	 */
+	public SubC(String operation, String filePath, String flags) {
+		try {
+			boolean intermediate = flags.indexOf('i') > -1;
+			boolean xref = flags.indexOf('x') > -1;
 
-            parser = FrontendFactory.createParser("SubC", "top-down", source);
-            parser.addMessageListener(new ParserMessageListener());
+			source = new Source(new BufferedReader(new FileReader(filePath)));
+			source.addMessageListener(new SourceMessageListener());
 
-            backend = BackendFactory.createBackend(operation);
-            backend.addMessageListener(new BackendMessageListener());
+			parser = FrontendFactory.createParser("SubC", "top-down", source);
+			parser.addMessageListener(new ParserMessageListener());
 
-            parser.parse();
-            source.close();
+			backend = BackendFactory.createBackend(operation);
+			backend.addMessageListener(new BackendMessageListener());
 
-            if (parser.getErrorCount() == 0) {
-                symTabStack = parser.getSymTabStack();
+			parser.parse();
+			source.close();
 
-                SymTabEntry programId = symTabStack.getProgramId();
-                iCode = (ICode) programId.getAttribute(ROUTINE_ICODE);
+			if (parser.getErrorCount() == 0) {
+				symTabStack = parser.getSymTabStack();
 
-                if (xref) {
-                    ParseTreePrinter treePrinter =
-                                new ParseTreePrinter(System.out);
-                    treePrinter.print(symTabStack);
-                    CrossReferencer crossReferencer = new CrossReferencer();
-                    crossReferencer.print(symTabStack);
-                }
+				SymTabEntry programId = symTabStack.getProgramId();
+				iCode = (ICode) programId.getAttribute(ROUTINE_ICODE);
 
-                if (intermediate) {
-                    ParseTreePrinter treePrinter =
-                                         new ParseTreePrinter(System.out);
-                    treePrinter.print(symTabStack);
-                }
+				if (xref) {
+					ParseTreePrinter treePrinter = new ParseTreePrinter(System.out);
+					treePrinter.print(symTabStack);
+					CrossReferencer crossReferencer = new CrossReferencer();
+					crossReferencer.print(symTabStack);
+				}
 
-                backend.process(iCode, symTabStack);
-            }
-          }
-        catch (Exception ex) {
-            System.out.println("***** Internal translator error. *****");
-            ex.printStackTrace();
-        }
-    }
+				if (intermediate) {
+					ParseTreePrinter treePrinter = new ParseTreePrinter(System.out);
+					treePrinter.print(symTabStack);
+				}
 
-    private static final String FLAGS = "[-ix]";
-    private static final String USAGE =
-        "Usage: SubC execute|compile " + FLAGS + " <source file path>";
+				backend.process(iCode, symTabStack);
+			}
+		} catch (Exception ex) {
+			System.out.println("***** Internal translator error. *****");
+			ex.printStackTrace();
+		}
+	}
 
-    /**
-     * The main method.
-     * @param args command-line arguments: "compile" or "execute" followed by
-     *             optional flags followed by the source file path.
-     */
-    public static void main(String args[])
-    {
-        try {
-            String operation = args[0];
+	private static final String FLAGS = "[-ix]";
+	private static final String USAGE = "Usage: SubC execute|compile " + FLAGS + " <source file path>";
 
-            // Operation.
-            if (!(   operation.equalsIgnoreCase("compile")
-                  || operation.equalsIgnoreCase("execute"))) {
-                throw new Exception();
-            }
+	/**
+	 * The main method.
+	 * 
+	 * @param args
+	 *            command-line arguments: "compile" or "execute" followed by
+	 *            optional flags followed by the source file path.
+	 */
+	public static void main(String args[]) {
+		try {
+			String operation = args[0];
 
-            int i = 0;
-            String flags = "";
+			// Operation.
+			if (!(operation.equalsIgnoreCase("compile") || operation.equalsIgnoreCase("execute"))) {
+				throw new Exception();
+			}
 
-            // Flags.
-            while ((++i < args.length) && (args[i].charAt(0) == '-')) {
-                flags += args[i].substring(1);
-            }
+			int i = 0;
+			String flags = "";
 
-            // Source path.
-            if (i < args.length) {
-                String path = args[i];
-                new SubC(operation, path, flags);
-            }
-            else {
-                throw new Exception();
-            }
-        }
-        catch (Exception ex) {
-            System.out.println(USAGE);
-        }
-    }
+			// Flags.
+			while ((++i < args.length) && (args[i].charAt(0) == '-')) {
+				flags += args[i].substring(1);
+			}
 
-    private static final String SOURCE_LINE_FORMAT = "%03d %s";
+			// Source path.
+			if (i < args.length) {
+				String path = args[i];
+				new SubC(operation, path, flags);
+			} else {
+				throw new Exception();
+			}
+		} catch (Exception ex) {
+			System.out.println(USAGE);
+		}
+	}
 
-    /**
-     * Listener for source messages.
-     */
-    private class SourceMessageListener implements MessageListener
-    {
-        /**
-         * Called by the source whenever it produces a message.
-         * @param message the message.
-         */
-        public void messageReceived(Message message)
-        {
-            MessageType type = message.getType();
-            Object body[] = (Object []) message.getBody();
+	private static final String SOURCE_LINE_FORMAT = "%03d %s";
 
-            switch (type) {
+	/**
+	 * Listener for source messages.
+	 */
+	private class SourceMessageListener implements MessageListener {
+		/**
+		 * Called by the source whenever it produces a message.
+		 * 
+		 * @param message
+		 *            the message.
+		 */
+		public void messageReceived(Message message) {
+			MessageType type = message.getType();
+			Object body[] = (Object[]) message.getBody();
 
-                case SOURCE_LINE: {
-                    int lineNumber = (Integer) body[0];
-                    String lineText = (String) body[1];
+			switch (type) {
 
-                    System.out.println(String.format(SOURCE_LINE_FORMAT,
-                                                     lineNumber, lineText));
-                    break;
-                }
-            }
-        }
-    }
+			case SOURCE_LINE: {
+				int lineNumber = (Integer) body[0];
+				String lineText = (String) body[1];
 
-    private static final String PARSER_SUMMARY_FORMAT =
-        "\n%,20d source lines." +
-        "\n%,20d syntax errors." +
-        "\n%,20.2f seconds total parsing time.\n";
+				System.out.println(String.format(SOURCE_LINE_FORMAT, lineNumber, lineText));
+				break;
+			}
+			}
+		}
+	}
 
-    private static final int PREFIX_WIDTH = 5;
+	private static final String PARSER_SUMMARY_FORMAT = "\n%,20d source lines." + "\n%,20d syntax errors."
+			+ "\n%,20.2f seconds total parsing time.\n";
 
-    /**
-     * Listener for parser messages.
-     */
-    private class ParserMessageListener implements MessageListener
-    {
-        /**
-         * Called by the parser whenever it produces a message.
-         * @param message the message.
-         */
-        public void messageReceived(Message message)
-        {
-            MessageType type = message.getType();
+	private static final int PREFIX_WIDTH = 5;
 
-            switch (type) {
+	/**
+	 * Listener for parser messages.
+	 */
+	private class ParserMessageListener implements MessageListener {
+		/**
+		 * Called by the parser whenever it produces a message.
+		 * 
+		 * @param message
+		 *            the message.
+		 */
+		public void messageReceived(Message message) {
+			MessageType type = message.getType();
 
-                case PARSER_SUMMARY: {
-                    Number body[] = (Number[]) message.getBody();
-                    int statementCount = (Integer) body[0];
-                    int syntaxErrors = (Integer) body[1];
-                    float elapsedTime = (Float) body[2];
+			switch (type) {
 
-                    System.out.printf(PARSER_SUMMARY_FORMAT,
-                                      statementCount, syntaxErrors,
-                                      elapsedTime);
-                    break;
-                }
+			case PARSER_SUMMARY: {
+				Number body[] = (Number[]) message.getBody();
+				int statementCount = (Integer) body[0];
+				int syntaxErrors = (Integer) body[1];
+				float elapsedTime = (Float) body[2];
 
-                case SYNTAX_ERROR: {
-                    Object body[] = (Object []) message.getBody();
-                    int lineNumber = (Integer) body[0];
-                    int position = (Integer) body[1];
-                    String tokenText = (String) body[2];
-                    String errorMessage = (String) body[3];
+				System.out.printf(PARSER_SUMMARY_FORMAT, statementCount, syntaxErrors, elapsedTime);
+				break;
+			}
 
-                    int spaceCount = PREFIX_WIDTH + position;
-                    StringBuilder flagBuffer = new StringBuilder();
+			case SYNTAX_ERROR: {
+				Object body[] = (Object[]) message.getBody();
+				int lineNumber = (Integer) body[0];
+				int position = (Integer) body[1];
+				String tokenText = (String) body[2];
+				String errorMessage = (String) body[3];
 
-                    // Spaces up to the error position.
-                    for (int i = 1; i < spaceCount; ++i) {
-                        flagBuffer.append(' ');
-                    }
+				int spaceCount = PREFIX_WIDTH + position;
+				StringBuilder flagBuffer = new StringBuilder();
 
-                    // A pointer to the error followed by the error message.
-                    flagBuffer.append("^\n*** ").append(errorMessage);
+				// Spaces up to the error position.
+				for (int i = 1; i < spaceCount; ++i) {
+					flagBuffer.append(' ');
+				}
 
-                    // Text, if any, of the bad token.
-                    if (tokenText != null) {
-                        flagBuffer.append(" [at \"").append(tokenText)
-                            .append("\"]");
-                    }
+				// A pointer to the error followed by the error message.
+				flagBuffer.append("^\n*** ").append(errorMessage);
 
-                    System.out.println(flagBuffer.toString());
-                    break;
-                }
-            }
-        }
-    }
+				// Text, if any, of the bad token.
+				if (tokenText != null) {
+					flagBuffer.append(" [at \"").append(tokenText).append("\"]");
+				}
 
-    private static final String INTERPRETER_SUMMARY_FORMAT =
-        "\n%,20d statements executed." +
-        "\n%,20d runtime errors." +
-        "\n%,20.2f seconds total execution time.\n";
+				System.out.println(flagBuffer.toString());
+				break;
+			}
+			}
+		}
+	}
 
-    private static final String COMPILER_SUMMARY_FORMAT =
-        "\n%,20d instructions generated." +
-        "\n%,20.2f seconds total code generation time.\n";
+	private static final String INTERPRETER_SUMMARY_FORMAT = "\n%,20d statements executed." + "\n%,20d runtime errors."
+			+ "\n%,20.2f seconds total execution time.\n";
 
-    private static final String LINE_FORMAT =
-        ">>> AT LINE %03d\n";
+	private static final String COMPILER_SUMMARY_FORMAT = "\n%,20d instructions generated."
+			+ "\n%,20.2f seconds total code generation time.\n";
 
-    private static final String ASSIGN_FORMAT =
-        ">>> LINE %03d: %s = %s\n";
+	private static final String LINE_FORMAT = ">>> AT LINE %03d\n";
 
-    /**
-     * Listener for back end messages.
-     */
-    private class BackendMessageListener implements MessageListener
-    {
-        private boolean firstOutputMessage = true;
+	private static final String ASSIGN_FORMAT = ">>> LINE %03d: %s = %s\n";
 
-        /**
-         * Called by the back end whenever it produces a message.
-         * @param message the message.
-         */
-        public void messageReceived(Message message)
-        {
-            MessageType type = message.getType();
+	/**
+	 * Listener for back end messages.
+	 */
+	private class BackendMessageListener implements MessageListener {
+		private boolean firstOutputMessage = true;
 
-            switch (type) {
+		/**
+		 * Called by the back end whenever it produces a message.
+		 * 
+		 * @param message
+		 *            the message.
+		 */
+		public void messageReceived(Message message) {
+			MessageType type = message.getType();
 
-                case ASSIGN: {
-                    if (firstOutputMessage) {
-                        System.out.println("\n===== OUTPUT =====\n");
-                        firstOutputMessage = false;
-                    }
+			switch (type) {
 
-                    Object body[] = (Object[]) message.getBody();
-                    int lineNumber = (Integer) body[0];
-                    String variableName = (String) body[1];
-                    Object value = body[2];
+			case ASSIGN: {
+				if (firstOutputMessage) {
+					System.out.println("\n===== OUTPUT =====\n");
+					firstOutputMessage = false;
+				}
 
-                    System.out.printf(ASSIGN_FORMAT,
-                                      lineNumber, variableName, value);
-                    break;
-                }
+				Object body[] = (Object[]) message.getBody();
+				int lineNumber = (Integer) body[0];
+				String variableName = (String) body[1];
+				Object value = body[2];
 
-                case RUNTIME_ERROR: {
-                    Object body[] = (Object []) message.getBody();
-                    String errorMessage = (String) body[0];
-                    Integer lineNumber = (Integer) body[1];
+				System.out.printf(ASSIGN_FORMAT, lineNumber, variableName, value);
+				break;
+			}
 
-                    System.out.print("*** RUNTIME ERROR");
-                    if (lineNumber != null) {
-                        System.out.print(" AT LINE " +
-                                         String.format("%03d", lineNumber));
-                    }
-                    System.out.println(": " + errorMessage);
-                    break;
-                }
+			case RUNTIME_ERROR: {
+				Object body[] = (Object[]) message.getBody();
+				String errorMessage = (String) body[0];
+				Integer lineNumber = (Integer) body[1];
 
-                case INTERPRETER_SUMMARY: {
-                    Number body[] = (Number[]) message.getBody();
-                    int executionCount = (Integer) body[0];
-                    int runtimeErrors = (Integer) body[1];
-                    float elapsedTime = (Float) body[2];
+				System.out.print("*** RUNTIME ERROR");
+				if (lineNumber != null) {
+					System.out.print(" AT LINE " + String.format("%03d", lineNumber));
+				}
+				System.out.println(": " + errorMessage);
+				break;
+			}
 
-                    System.out.printf(INTERPRETER_SUMMARY_FORMAT,
-                                      executionCount, runtimeErrors,
-                                      elapsedTime);
-                    break;
-                }
+			case INTERPRETER_SUMMARY: {
+				Number body[] = (Number[]) message.getBody();
+				int executionCount = (Integer) body[0];
+				int runtimeErrors = (Integer) body[1];
+				float elapsedTime = (Float) body[2];
 
-                case COMPILER_SUMMARY: {
-                    Number body[] = (Number[]) message.getBody();
-                    int instructionCount = (Integer) body[0];
-                    float elapsedTime = (Float) body[1];
+				System.out.printf(INTERPRETER_SUMMARY_FORMAT, executionCount, runtimeErrors, elapsedTime);
+				break;
+			}
 
-                    System.out.printf(COMPILER_SUMMARY_FORMAT,
-                                      instructionCount, elapsedTime);
-                    break;
-                }
-            }
-        }
-    }
+			case COMPILER_SUMMARY: {
+				Number body[] = (Number[]) message.getBody();
+				int instructionCount = (Integer) body[0];
+				float elapsedTime = (Float) body[1];
+
+				System.out.printf(COMPILER_SUMMARY_FORMAT, instructionCount, elapsedTime);
+				break;
+			}
+			}
+		}
+	}
 }

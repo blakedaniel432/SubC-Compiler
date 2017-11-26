@@ -1,19 +1,20 @@
-const int TWO = 2;
-
-int centigrade;
-int five;
-int ratio;
-int fahrenheit;
-int number;
-int root;
-int dze;
-
 {
+	int centigrade;
+	int five;
+	int ratio;
+	int fahrenheit;
+	int number;
+	int root;
+	int dze;
 	char character;
+	
     { //Temperature conversions
-        five = -1 + TWO - 3 + 4 + 3;
+        const int TWO = 2;
+        const int THREE = 3;
+		
+        five = -1 + TWO - THREE + 4 + 3;
         ratio = five/9.0;
-
+        
         while (five != 3) {
         	five = five - 1;
         }
@@ -36,7 +37,7 @@ int dze;
         centigrade = 25;
         fahrenheit = 32 + centigrade/ratio;
     }
-
+    
     //Runtime division by zero error.
     dze = fahrenheit/(ratio - ratio);
 
@@ -46,5 +47,5 @@ int dze;
         root = (number/root + root)/2;
     }
 
-    character = "a";
+    character = 'a';
 }

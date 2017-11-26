@@ -13,60 +13,68 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 /**
  * <h1>BlockParser</h1>
  *
- * <p>Parse a SubC block.</p>
+ * <p>
+ * Parse a SubC block.
+ * </p>
  *
- * <p>Copyright (c) 2009 by Ronald Mak</p>
- * <p>For instructional purposes only.  No warranties.</p>
+ * <p>
+ * Copyright (c) 2009 by Ronald Mak
+ * </p>
+ * <p>
+ * For instructional purposes only. No warranties.
+ * </p>
  */
-public class BlockParser extends SubCParserTD
-{
-    /**
-     * Constructor.
-     * @param parent the parent parser.
-     */
-    public BlockParser(SubCParserTD parent)
-    {
-        super(parent);
-    }
+public class BlockParser extends SubCParserTD {
+	/**
+	 * Constructor.
+	 * 
+	 * @param parent
+	 *            the parent parser.
+	 */
+	public BlockParser(SubCParserTD parent) {
+		super(parent);
+	}
 
-    /**
-     * Parse a block.
-     * @param token the initial token.
-     * @param routineId the symbol table entry of the routine name.
-     * @return the root node of the parse tree.
-     * @throws Exception if an error occurred.
-     */
-    public ICodeNode parse(Token token, SymTabEntry routineId)
-        throws Exception
-    {
-        while(token.getType() != LEFT_BRACE){
-            DeclarationsParser declarationsParser = new DeclarationsParser(this);
-            // Parse any declarations.
-            declarationsParser.parse(token);
-            token = currentToken();
-        }
+	/**
+	 * Parse a block.
+	 * 
+	 * @param token
+	 *            the initial token.
+	 * @param routineId
+	 *            the symbol table entry of the routine name.
+	 * @return the root node of the parse tree.
+	 * @throws Exception
+	 *             if an error occurred.
+	 */
+	public ICodeNode parse(Token token, SymTabEntry routineId) throws Exception {
+		//while (token.getType() != LEFT_BRACE) {
+			DeclarationsParser declarationsParser = new DeclarationsParser(this);
+			// Parse any declarations.
+			declarationsParser.parse(token);
+			token = currentToken();
+		//} REMOVE IF PROBLEMS
 
-        StatementParser statementParser = new StatementParser(this);
+		StatementParser statementParser = new StatementParser(this);
 
-        token = synchronize(StatementParser.STMT_START_SET);
-        TokenType tokenType = token.getType();
-        ICodeNode rootNode = null;
+		token = synchronize(StatementParser.STMT_START_SET);
+		TokenType tokenType = token.getType();
+		ICodeNode rootNode = null;
 
-        // Look for the LEFT_BRACE token to parse a compound statement.
-        if (tokenType == LEFT_BRACE){
-            rootNode = statementParser.parse(token);
-        }
+		// Look for the LEFT_BRACE token to parse a compound statement.
+		if (tokenType == LEFT_BRACE) {
+			rootNode = statementParser.parse(token);
+		}
 
-        // Missing LEFT_BRACE: Attempt to parse anyway if possible.
-        else {
-            errorHandler.flag(token, MISSING_LEFT_BRACE, this);
+		// Missing LEFT_BRACE: Attempt to parse anyway if possible.
+		else {
+			errorHandler.flag(token, MISSING_LEFT_BRACE, this);
 
-            if (StatementParser.STMT_START_SET.contains(tokenType)) {
-                rootNode = ICodeFactory.createICodeNode(COMPOUND);
-                statementParser.parseList(token, rootNode, RIGHT_BRACE,MISSING_RIGHT_BRACE);
-            }
-        }
+			if (StatementParser.STMT_START_SET.contains(tokenType)) {
+				rootNode = ICodeFactory.createICodeNode(COMPOUND);
+				statementParser.parseList(token, rootNode, RIGHT_BRACE, MISSING_RIGHT_BRACE);
+			}
+		}
 
-        return rootNode;
-    }
+		return rootNode;
+	}
 }

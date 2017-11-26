@@ -15,243 +15,253 @@ import static wci.backend.interpreter.RuntimeErrorCode.*;
 /**
  * <h1>ExpressionExecutor</h1>
  *
- * <p>Execute an expression.</p>
+ * <p>
+ * Execute an expression.
+ * </p>
  *
- * <p>Copyright (c) 2009 by Ronald Mak</p>
- * <p>For instructional purposes only.  No warranties.</p>
+ * <p>
+ * Copyright (c) 2009 by Ronald Mak
+ * </p>
+ * <p>
+ * For instructional purposes only. No warranties.
+ * </p>
  */
-public class ExpressionExecutor extends StatementExecutor
-{
-    /**
-     * Constructor.
-     * @param the parent executor.
-     */
-    public ExpressionExecutor(Executor parent)
-    {
-        super(parent);
-    }
+public class ExpressionExecutor extends StatementExecutor {
+	/**
+	 * Constructor.
+	 * 
+	 * @param the
+	 *            parent executor.
+	 */
+	public ExpressionExecutor(Executor parent) {
+		super(parent);
+	}
 
-    /**
-     * Execute an expression.
-     * @param node the root intermediate code node of the compound statement.
-     * @return the computed value of the expression.
-     */
-    public Object execute(ICodeNode node)
-    {
-        ICodeNodeTypeImpl nodeType = (ICodeNodeTypeImpl) node.getType();
+	/**
+	 * Execute an expression.
+	 * 
+	 * @param node
+	 *            the root intermediate code node of the compound statement.
+	 * @return the computed value of the expression.
+	 */
+	public Object execute(ICodeNode node) {
+		ICodeNodeTypeImpl nodeType = (ICodeNodeTypeImpl) node.getType();
 
-        switch (nodeType) {
+		switch (nodeType) {
 
-            case VARIABLE: {
+		case VARIABLE: {
 
-                // Get the variable's symbol table entry and return its value.
-                SymTabEntry entry = (SymTabEntry) node.getAttribute(ID);
-                return entry.getAttribute(DATA_VALUE);
-            }
+			// Get the variable's symbol table entry and return its value.
+			SymTabEntry entry = (SymTabEntry) node.getAttribute(ID);
+			return entry.getAttribute(DATA_VALUE);
+		}
 
-            case INTEGER_CONSTANT: {
+		case INTEGER_CONSTANT: {
 
-                // Return the integer value.
-                return (Integer) node.getAttribute(VALUE);
-            }
+			// Return the integer value.
+			return (Integer) node.getAttribute(VALUE);
+		}
 
-            case REAL_CONSTANT: {
+		case REAL_CONSTANT: {
 
-                // Return the float value.
-                return (Float) node.getAttribute(VALUE);
-            }
+			// Return the float value.
+			return (Float) node.getAttribute(VALUE);
+		}
 
-            case STRING_CONSTANT: {
+		case STRING_CONSTANT: {
 
-                // Return the string value.
-                return (String) node.getAttribute(VALUE);
-            }
+			// Return the string value.
+			return (String) node.getAttribute(VALUE);
+		}
 
-            case NEGATE: {
+		case CHAR_CONSTANT: {
 
-                // Get the NEGATE node's expression node child.
-                ArrayList<ICodeNode> children = node.getChildren();
-                ICodeNode expressionNode = children.get(0);
+			// Return the char value.
+			return (String) node.getAttribute(VALUE);
+		}
 
-                // Execute the expression and return the negative of its value.
-                Object value = execute(expressionNode);
-                if (value instanceof Integer) {
-                    return -((Integer) value);
-                }
-                else {
-                    return -((Float) value);
-                }
-            }
+		case NEGATE: {
 
-            case NOT: {
+			// Get the NEGATE node's expression node child.
+			ArrayList<ICodeNode> children = node.getChildren();
+			ICodeNode expressionNode = children.get(0);
 
-                // Get the NOT node's expression node child.
-                ArrayList<ICodeNode> children = node.getChildren();
-                ICodeNode expressionNode = children.get(0);
+			// Execute the expression and return the negative of its value.
+			Object value = execute(expressionNode);
+			if (value instanceof Integer) {
+				return -((Integer) value);
+			} else {
+				return -((Float) value);
+			}
+		}
 
-                // Execute the expression and return the "not" of its value.
-                boolean value = (Boolean) execute(expressionNode);
-                return !value;
-            }
+		case NOT: {
 
-            // Must be a binary operator.
-            default: return executeBinaryOperator(node, nodeType);
-        }
-    }
+			// Get the NOT node's expression node child.
+			ArrayList<ICodeNode> children = node.getChildren();
+			ICodeNode expressionNode = children.get(0);
 
-    // Set of arithmetic operator node types.
-    private static final EnumSet<ICodeNodeTypeImpl> ARITH_OPS =
-        EnumSet.of(ADD, SUBTRACT, MULTIPLY, FLOAT_DIVIDE, INTEGER_DIVIDE, MOD);
+			// Execute the expression and return the "not" of its value.
+			boolean value = (Boolean) execute(expressionNode);
+			return !value;
+		}
 
-    /**
-     * Execute a binary operator.
-     * @param node the root node of the expression.
-     * @param nodeType the node type.
-     * @return the computed value of the expression.
-     */
-    private Object executeBinaryOperator(ICodeNode node,
-                                         ICodeNodeTypeImpl nodeType)
-    {
-        // Get the two operand children of the operator node.
-        ArrayList<ICodeNode> children = node.getChildren();
-        ICodeNode operandNode1 = children.get(0);
-        ICodeNode operandNode2 = children.get(1);
+		// Must be a binary operator.
+		default:
+			return executeBinaryOperator(node, nodeType);
+		}
+	}
 
-        // Operands.
-        Object operand1 = execute(operandNode1);
-        Object operand2 = execute(operandNode2);
+	// Set of arithmetic operator node types.
+	private static final EnumSet<ICodeNodeTypeImpl> ARITH_OPS = EnumSet.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD);
 
-        boolean integerMode = (operand1 instanceof Integer) &&
-                              (operand2 instanceof Integer);
+	/**
+	 * Execute a binary operator.
+	 * 
+	 * @param node
+	 *            the root node of the expression.
+	 * @param nodeType
+	 *            the node type.
+	 * @return the computed value of the expression.
+	 */
+	private Object executeBinaryOperator(ICodeNode node, ICodeNodeTypeImpl nodeType) {
+		// Get the two operand children of the operator node.
+		ArrayList<ICodeNode> children = node.getChildren();
+		ICodeNode operandNode1 = children.get(0);
+		ICodeNode operandNode2 = children.get(1);
 
-        // ====================
-        // Arithmetic operators
-        // ====================
+		// Operands.
+		Object operand1 = execute(operandNode1);
+		Object operand2 = execute(operandNode2);
 
-        if (ARITH_OPS.contains(nodeType)) {
-            if (integerMode) {
-                int value1 = (Integer) operand1;
-                int value2 = (Integer) operand2;
+		boolean integerMode = (operand1 instanceof Integer) && (operand2 instanceof Integer);
 
-                // Integer operations.
-                switch (nodeType) {
-                    case ADD:      return value1 + value2;
-                    case SUBTRACT: return value1 - value2;
-                    case MULTIPLY: return value1 * value2;
+		// ====================
+		// Arithmetic operators
+		// ====================
 
-                    case FLOAT_DIVIDE: {
+		if (ARITH_OPS.contains(nodeType)) {
+			if (integerMode) {
+				int value1 = (Integer) operand1;
+				int value2 = (Integer) operand2;
 
-                        // Check for division by zero.
-                        if (value2 != 0) {
-                            return ((float) value1)/((float) value2);
-                        }
-                        else {
-                            errorHandler.flag(node, DIVISION_BY_ZERO, this);
-                            return 0;
-                        }
-                    }
+				// Integer operations.
+				switch (nodeType) {
+				case ADD:
+					return value1 + value2;
+				case SUBTRACT:
+					return value1 - value2;
+				case MULTIPLY:
+					return value1 * value2;
 
-                    case INTEGER_DIVIDE: {
+				case DIVIDE: {
+					// Check for division by zero.
+					if (value2 != 0) {
+						return value1 / value2;
+					} else {
+						errorHandler.flag(node, DIVISION_BY_ZERO, this);
+						return 0;
+					}
+				}
 
-                        // Check for division by zero.
-                        if (value2 != 0) {
-                            return value1/value2;
-                        }
-                        else {
-                            errorHandler.flag(node, DIVISION_BY_ZERO, this);
-                            return 0;
-                        }
-                    }
+				case MOD: {
 
-                    case MOD:  {
+					// Check for division by zero.
+					if (value2 != 0) {
+						return value1 % value2;
+					} else {
+						errorHandler.flag(node, DIVISION_BY_ZERO, this);
+						return 0;
+					}
+				}
+				}
+			} else {
+				float value1 = operand1 instanceof Integer ? (Integer) operand1 : (Float) operand1;
+				float value2 = operand2 instanceof Integer ? (Integer) operand2 : (Float) operand2;
 
-                        // Check for division by zero.
-                        if (value2 != 0) {
-                            return value1%value2;
-                        }
-                        else {
-                            errorHandler.flag(node, DIVISION_BY_ZERO, this);
-                            return 0;
-                        }
-                    }
-                }
-            }
-            else {
-                float value1 = operand1 instanceof Integer
-                                   ? (Integer) operand1 : (Float) operand1;
-                float value2 = operand2 instanceof Integer
-                                   ? (Integer) operand2 : (Float) operand2;
+				// Float operations.
+				switch (nodeType) {
+				case ADD:
+					return value1 + value2;
+				case SUBTRACT:
+					return value1 - value2;
+				case MULTIPLY:
+					return value1 * value2;
 
-                // Float operations.
-                switch (nodeType) {
-                    case ADD:      return value1 + value2;
-                    case SUBTRACT: return value1 - value2;
-                    case MULTIPLY: return value1 * value2;
+				case DIVIDE: {
 
-                    case FLOAT_DIVIDE: {
+					// Check for division by zero.
+					if (value2 != 0.0f) {
+						return value1 / value2;
+					} else {
+						errorHandler.flag(node, DIVISION_BY_ZERO, this);
+						return 0.0f;
+					}
+				}
+				}
+			}
+		}
 
-                        // Check for division by zero.
-                        if (value2 != 0.0f) {
-                            return value1/value2;
-                        }
-                        else {
-                            errorHandler.flag(node, DIVISION_BY_ZERO, this);
-                            return 0.0f;
-                        }
-                    }
-                }
-            }
-        }
+		// ==========
+		// AND and OR
+		// ==========
 
-        // ==========
-        // AND and OR
-        // ==========
+		else if ((nodeType == AND) || (nodeType == OR)) {
+			boolean value1 = (Boolean) operand1;
+			boolean value2 = (Boolean) operand2;
 
-        else if ((nodeType == AND) || (nodeType == OR)) {
-            boolean value1 = (Boolean) operand1;
-            boolean value2 = (Boolean) operand2;
+			switch (nodeType) {
+			case AND:
+				return value1 && value2;
+			case OR:
+				return value1 || value2;
+			}
+		}
 
-            switch (nodeType) {
-                case AND: return value1 && value2;
-                case OR:  return value1 || value2;
-            }
-        }
+		// ====================
+		// Relational operators
+		// ====================
 
-        // ====================
-        // Relational operators
-        // ====================
+		else if (integerMode) {
+			int value1 = (Integer) operand1;
+			int value2 = (Integer) operand2;
 
-        else if (integerMode) {
-            int value1 = (Integer) operand1;
-            int value2 = (Integer) operand2;
+			// Integer operands.
+			switch (nodeType) {
+			case EQ:
+				return value1 == value2;
+			case NE:
+				return value1 != value2;
+			case LT:
+				return value1 < value2;
+			case LE:
+				return value1 <= value2;
+			case GT:
+				return value1 > value2;
+			case GE:
+				return value1 >= value2;
+			}
+		} else {
+			float value1 = operand1 instanceof Integer ? (Integer) operand1 : (Float) operand1;
+			float value2 = operand2 instanceof Integer ? (Integer) operand2 : (Float) operand2;
 
-            // Integer operands.
-            switch (nodeType) {
-                case EQ: return value1 == value2;
-                case NE: return value1 != value2;
-                case LT: return value1 <  value2;
-                case LE: return value1 <= value2;
-                case GT: return value1 >  value2;
-                case GE: return value1 >= value2;
-            }
-        }
-        else {
-            float value1 = operand1 instanceof Integer
-                               ? (Integer) operand1 : (Float) operand1;
-            float value2 = operand2 instanceof Integer
-                               ? (Integer) operand2 : (Float) operand2;
+			// Float operands.
+			switch (nodeType) {
+			case EQ:
+				return value1 == value2;
+			case NE:
+				return value1 != value2;
+			case LT:
+				return value1 < value2;
+			case LE:
+				return value1 <= value2;
+			case GT:
+				return value1 > value2;
+			case GE:
+				return value1 >= value2;
+			}
+		}
 
-            // Float operands.
-            switch (nodeType) {
-                case EQ: return value1 == value2;
-                case NE: return value1 != value2;
-                case LT: return value1 <  value2;
-                case LE: return value1 <= value2;
-                case GT: return value1 >  value2;
-                case GE: return value1 >= value2;
-            }
-        }
-
-        return 0;  // should never get here
-    }
+		return 0; // should never get here
+	}
 }
