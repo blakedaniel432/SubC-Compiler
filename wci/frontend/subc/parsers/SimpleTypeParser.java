@@ -37,11 +37,12 @@ class SimpleTypeParser extends TypeSpecificationParser
 
     // Synchronization set for starting a simple type specification.
     static final EnumSet<SubCTokenType> SIMPLE_TYPE_START_SET =
-        ConstantDefinitionsParser.CONSTANT_START_SET.clone();
+        DeclarationsParser.TYPE_START_SET.clone();
     static {
-        //SIMPLE_TYPE_START_SET.add(LEFT_PAREN);
+        SIMPLE_TYPE_START_SET.add(ENUM);
         SIMPLE_TYPE_START_SET.add(COMMA);
         SIMPLE_TYPE_START_SET.add(SEMICOLON);
+        SIMPLE_TYPE_START_SET.add(IDENTIFIER);
     }
 
     /**
@@ -58,13 +59,29 @@ class SimpleTypeParser extends TypeSpecificationParser
 
         switch ((SubCTokenType) token.getType()) {
 
+            case INT:{
+                nextToken();
+                return Predefined.integerType;
+            }
+
+            case CHAR:{
+                nextToken();
+                return Predefined.charType;
+            }
+
+            case FLOAT:
+            case DOUBLE:{
+                nextToken();
+                return Predefined.realType;
+            }
+
             case IDENTIFIER: {
-                String name = token.getText(); //REMOVED .toLowerCase()
+                String name = token.getText().toLowerCase();
                 SymTabEntry id = symTabStack.lookup(name);
 
                 if (id != null) {
                     Definition definition = id.getDefinition();
-                    
+
                     // It's either a type identifier
                     // or the start of a subrange type.
                     if (definition == DefinitionImpl.TYPE) {
@@ -74,31 +91,31 @@ class SimpleTypeParser extends TypeSpecificationParser
                         // Return the type of the referent type.
                         return id.getTypeSpec();
                     }
-                    else /*if ((definition != CONSTANT) &&
-                             (definition != ENUMERATION_CONSTANT))*/ {
+                    else if ((definition != CONSTANT) &&
+                             (definition != ENUMERATION_CONSTANT)) {
                         errorHandler.flag(token, NOT_TYPE_IDENTIFIER, this);
                         token = nextToken();  // consume the identifier
                         return null;
                     }
-                    /*else {
-                        SubrangeTypeParser subrangeTypeParser =
-                            new SubrangeTypeParser(this);
-                        return subrangeTypeParser.parse(token);
-                    }*/
+                    else {
+                        // SubrangeTypeParser subrangeTypeParser =
+                        //     new SubrangeTypeParser(this);
+                        // return subrangeTypeParser.parse(token);
+                    }
                 }
                 else {
-                    errorHandler.flag(token, IDENTIFIER_UNDEFINED, this);
-                    token = nextToken();  // consume the identifier
+                    //errorHandler.flag(token, IDENTIFIER_UNDEFINED, this);
+                    //token = nextToken();  // consume the identifier
                     return null;
                 }
             }
-        
-            /*case LEFT_PAREN: {
+
+            case ENUM: {
                 EnumerationTypeParser enumerationTypeParser =
                     new EnumerationTypeParser(this);
                 return enumerationTypeParser.parse(token);
-            }*/
-			
+            }
+
             case COMMA:
             case SEMICOLON: {
                 errorHandler.flag(token, INVALID_TYPE, this);
@@ -106,10 +123,10 @@ class SimpleTypeParser extends TypeSpecificationParser
             }
 
             default: {
-                /*SubrangeTypeParser subrangeTypeParser =
-                    new SubrangeTypeParser(this);
-                return subrangeTypeParser.parse(token);*/
-            	return null; //NOT SURE
+                return Predefined.integerType;
+                // SubrangeTypeParser subrangeTypeParser =
+                //     new SubrangeTypeParser(this);
+                // return subrangeTypeParser.parse(token);
             }
         }
     }

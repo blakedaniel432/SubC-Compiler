@@ -39,31 +39,34 @@ public class BlockParser extends SubCParserTD
     public ICodeNode parse(Token token, SymTabEntry routineId)
         throws Exception
     {
-        DeclarationsParser declarationsParser = new DeclarationsParser(this);
-        StatementParser statementParser = new StatementParser(this);
+        while(token.getType() != LEFT_BRACE){
+            DeclarationsParser declarationsParser = new DeclarationsParser(this);
+            // Parse any declarations.
+            declarationsParser.parse(token);
+            token = currentToken();
+        }
 
-        // Parse any declarations.
-        declarationsParser.parse(token);
+        StatementParser statementParser = new StatementParser(this);
 
         token = synchronize(StatementParser.STMT_START_SET);
         TokenType tokenType = token.getType();
         ICodeNode rootNode = null;
 
-        // Look for the BEGIN token to parse a compound statement. //REPLACE BEGIN WITH LEFT_BRACE
-        if (tokenType == LEFT_BRACE) {
+        // Look for the LEFT_BRACE token to parse a compound statement.
+        if (tokenType == LEFT_BRACE){
             rootNode = statementParser.parse(token);
         }
-        
-        // Missing BEGIN: Attempt to parse anyway if possible.
+
+        // Missing LEFT_BRACE: Attempt to parse anyway if possible.
         else {
-            errorHandler.flag(token, MISSING_BEGIN, this);
+            errorHandler.flag(token, MISSING_LEFT_BRACE, this);
 
             if (StatementParser.STMT_START_SET.contains(tokenType)) {
                 rootNode = ICodeFactory.createICodeNode(COMPOUND);
-                statementParser.parseList(token, rootNode, RIGHT_BRACE, MISSING_END);
+                statementParser.parseList(token, rootNode, RIGHT_BRACE,MISSING_RIGHT_BRACE);
             }
         }
- 
+
         return rootNode;
     }
 }

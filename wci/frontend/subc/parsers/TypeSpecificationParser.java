@@ -37,8 +37,8 @@ class TypeSpecificationParser extends SubCParserTD
     static final EnumSet<SubCTokenType> TYPE_START_SET =
         SimpleTypeParser.SIMPLE_TYPE_START_SET.clone();
     static {
-        //TYPE_START_SET.add(SubCTokenType.ARRAY);
-        //TYPE_START_SET.add(SubCTokenType.RECORD);
+        // TYPE_START_SET.add(SubCTokenType.ARRAY);
+        // TYPE_START_SET.add(SubCTokenType.RECORD);
         TYPE_START_SET.add(SEMICOLON);
     }
 
@@ -54,17 +54,17 @@ class TypeSpecificationParser extends SubCParserTD
         // Synchronize at the start of a type specification.
         token = synchronize(TYPE_START_SET);
 
+
         switch ((SubCTokenType) token.getType()) {
+            // case ARRAY: {
+            //     ArrayTypeParser arrayTypeParser = new ArrayTypeParser(this);
+            //     return arrayTypeParser.parse(token);
+            // }
 
-            /*case ARRAY: {
-                ArrayTypeParser arrayTypeParser = new ArrayTypeParser(this);
-                return arrayTypeParser.parse(token);
-            }
-
-            case RECORD: {
-                RecordTypeParser recordTypeParser = new RecordTypeParser(this);
-                return recordTypeParser.parse(token);
-            }*/
+            // case RECORD: {
+            //     RecordTypeParser recordTypeParser = new RecordTypeParser(this);
+            //     return recordTypeParser.parse(token);
+            // }
 
             default: {
                 SimpleTypeParser simpleTypeParser = new SimpleTypeParser(this);

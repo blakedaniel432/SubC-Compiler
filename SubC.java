@@ -25,7 +25,6 @@ public class SubC
     private ICode iCode;              // generated intermediate code
     private SymTabStack symTabStack;  // symbol table stack
     private Backend backend;          // backend
-
     /**
      * Compile or interpret a SubC source program.
      * @param operation either "compile" or "execute".
@@ -57,6 +56,9 @@ public class SubC
                 iCode = (ICode) programId.getAttribute(ROUTINE_ICODE);
 
                 if (xref) {
+                    ParseTreePrinter treePrinter =
+                                new ParseTreePrinter(System.out);
+                    treePrinter.print(symTabStack);
                     CrossReferencer crossReferencer = new CrossReferencer();
                     crossReferencer.print(symTabStack);
                 }
@@ -69,7 +71,7 @@ public class SubC
 
                 backend.process(iCode, symTabStack);
             }
-        }
+          }
         catch (Exception ex) {
             System.out.println("***** Internal translator error. *****");
             ex.printStackTrace();
@@ -297,7 +299,6 @@ public class SubC
                     break;
                 }
             }
-
         }
     }
 }

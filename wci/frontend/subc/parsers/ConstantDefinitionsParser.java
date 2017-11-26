@@ -15,6 +15,8 @@ import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 import static wci.intermediate.typeimpl.TypeFormImpl.*;
 import static wci.intermediate.typeimpl.TypeKeyImpl.*;
+//import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
+//import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
 /**
  * <h1>ConstantDefinitionsParser</h1>
@@ -26,6 +28,7 @@ import static wci.intermediate.typeimpl.TypeKeyImpl.*;
  */
 public class ConstantDefinitionsParser extends DeclarationsParser
 {
+    protected TypeSpec constantType;
     /**
      * Constructor.
      * @param parent the parent parser.
@@ -40,17 +43,22 @@ public class ConstantDefinitionsParser extends DeclarationsParser
         DeclarationsParser.TYPE_START_SET.clone();
     static {
         IDENTIFIER_SET.add(IDENTIFIER);
+        IDENTIFIER_SET.add(SEMICOLON);
     }
 
     // Synchronization set for starting a constant.
     static final EnumSet<SubCTokenType> CONSTANT_START_SET =
-        EnumSet.of(IDENTIFIER, INT, REAL, PLUS, MINUS, STRING, SEMICOLON);
+        EnumSet.of(IDENTIFIER, INTEGER, REAL, PLUS, MINUS, STRING, SEMICOLON, COMMA);
 
     // Synchronization set for the = token.
     private static final EnumSet<SubCTokenType> EQUALS_SET =
         CONSTANT_START_SET.clone();
     static {
-        EQUALS_SET.add(ASSIGNMENT);
+        EQUALS_SET.add(INT);
+        EQUALS_SET.add(DOUBLE);
+        EQUALS_SET.add(FLOAT);
+        EQUALS_SET.add(CHAR);
+        EQUALS_SET.add(EQUALS);
         EQUALS_SET.add(SEMICOLON);
     }
 
@@ -58,7 +66,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
     private static final EnumSet<SubCTokenType> NEXT_START_SET =
         DeclarationsParser.TYPE_START_SET.clone();
     static {
-        NEXT_START_SET.add(SEMICOLON);
+        //NEXT_START_SET.add(SEMICOLON);
         NEXT_START_SET.add(IDENTIFIER);
     }
 
@@ -70,16 +78,20 @@ public class ConstantDefinitionsParser extends DeclarationsParser
     public void parse(Token token)
         throws Exception
     {
-        // Parse the type specification. //FIND OUT DATA TYPE BEFORE
-        TypeSpec constantType = parseTypeSpec(token);
-        
+        //ICodeNode constantNode = ICodeFactory.createICodeNode(INTEGER_CONSTANT);
+        constantType =parseTypeSpec(token);
+        if(constantType==null){
+            constantType = Predefined.integerType;
+        }
+
         token = synchronize(IDENTIFIER_SET);
 
         // Loop to parse a sequence of constant definitions
-        // separated by semicolons.
-        if (token.getType() == IDENTIFIER) { //CHANGED TO IF FROM WHILE
-            String name = token.getText(); //REMOVED .toLowerCase()
+        // separated by comma.
+        while (token.getType() == IDENTIFIER) {
+            String name = token.getText().toLowerCase();
             SymTabEntry constantId = symTabStack.lookupLocal(name);
+
 
             // Enter the new identifier into the symbol table
             // but don't set how it's defined yet.
@@ -92,53 +104,56 @@ public class ConstantDefinitionsParser extends DeclarationsParser
                 constantId = null;
             }
 
-            token = nextToken();  // consume the identifier token
 
-            // Synchronize on the = token.
+            token = nextToken();  // consume the identifier token
             token = synchronize(EQUALS_SET);
-            if (token.getType() == ASSIGNMENT) { //REPLACED EQUALS WITH ASSIGNMENT
+            if (token.getType() == EQUALS) {
                 token = nextToken();  // consume the =
             }
-            else {
-                errorHandler.flag(token, MISSING_EQUALS, this);
+            else if(DECLARATION_START_SET.contains(token.getType())){
+                // Parse the constant value.
+                //Object value = parseConstant(token);
+
+                // Set identifier to be a constant and set its value.
+                if (constantId != null) {
+                    constantId.setDefinition(CONSTANT);
+                    constantId.setAttribute(CONSTANT_VALUE, 0);
+                    constantId.setTypeSpec(constantType);
+                 }
+                break;
             }
 
             // Parse the constant value.
-            //Token constantToken = token;
             Object value = parseConstant(token);
 
             // Set identifier to be a constant and set its value.
             if (constantId != null) {
                 constantId.setDefinition(CONSTANT);
                 constantId.setAttribute(CONSTANT_VALUE, value);
-
-                /*// Set the constant's type.
-                TypeSpec constantType =
-                    constantToken.getType() == IDENTIFIER
-                        ? getConstantType(constantToken)
-                        : getConstantType(value);*/
                 constantId.setTypeSpec(constantType);
             }
 
             token = currentToken();
             TokenType tokenType = token.getType();
 
-            // Look for one or more semicolons after a definition.
-            if (tokenType == SEMICOLON) {
-                while (token.getType() == SEMICOLON) {
-                    token = nextToken();  // consume the ;
-                }
+            // Look for one comma after a definition.
+            if (tokenType == COMMA) {
+                token = nextToken();  // consume the ,
             }
-
-            // If at the start of the next definition or declaration,
-            // then missing a semicolon.
-            else if (NEXT_START_SET.contains(tokenType)) {
-                errorHandler.flag(token, MISSING_SEMICOLON, this);
+            else if(NEXT_START_SET.contains(tokenType)){
+                errorHandler.flag(token, MISSING_COMMA, this);
             }
-
             token = synchronize(IDENTIFIER_SET);
         }
+
+        if(token.getType() != SEMICOLON)
+            errorHandler.flag(token, MISSING_SEMICOLON, this);
+        else
+            nextToken();
+
+        //return constantNode;
     }
+
 
     /**
      * Parse a constant value.
@@ -168,7 +183,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
                 return parseIdentifierConstant(token, sign);
             }
 
-            case INT: {
+            case INTEGER: {
                 Integer value = (Integer) token.getValue();
                 nextToken();  // consume the number
                 return sign == MINUS ? -value : value;
@@ -189,6 +204,20 @@ public class ConstantDefinitionsParser extends DeclarationsParser
                 return (String) token.getValue();
             }
 
+            case COMMA:
+
+            case SEMICOLON: {
+                if(constantType == Predefined.integerType){
+                    return (int)0;
+                }
+                else if(constantType == Predefined.realType){
+                    return (float)0;
+                }
+                else if(constantType == Predefined.charType){
+                    return null;
+                }
+            }
+
             default: {
                 errorHandler.flag(token, INVALID_CONSTANT, this);
                 return null;
@@ -205,8 +234,8 @@ public class ConstantDefinitionsParser extends DeclarationsParser
      */
     protected Object parseIdentifierConstant(Token token, TokenType sign)
         throws Exception
-    {     
-        String name = token.getText(); //REMOVED .toLowerCase()
+    {
+        String name = token.getText().toLowerCase();
         SymTabEntry id = symTabStack.lookup(name);
 
         nextToken();  // consume the identifier
@@ -262,6 +291,24 @@ public class ConstantDefinitionsParser extends DeclarationsParser
     }
 
     /**
+     * Parse the type specification.
+     * @param token the current token.
+     * @return the type specification.
+     * @throws Exception if an error occurs.
+     */
+    protected TypeSpec parseTypeSpec(Token token)
+        throws Exception
+    {
+        // Parse the type specification.
+        TypeSpecificationParser typeSpecificationParser =
+            new TypeSpecificationParser(this);
+        TypeSpec type = typeSpecificationParser.parse(token);
+
+        return type;
+    }
+
+
+    /**
      * Return the type of a constant given its value.
      * @param value the constant value
      * @return the type specification.
@@ -295,7 +342,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser
      */
     protected TypeSpec getConstantType(Token identifier)
     {
-        String name = identifier.getText(); //REMOVED .toLowerCase()
+        String name = identifier.getText().toLowerCase();
         SymTabEntry id = symTabStack.lookup(name);
 
         if (id == null) {
@@ -311,25 +358,4 @@ public class ConstantDefinitionsParser extends DeclarationsParser
             return null;
         }
     }
-    
-    //BORROWED FROM VariableDeclarationsParser
-    protected TypeSpec parseTypeSpec(Token token)
-            throws Exception
-        {
-            // Synchronize on the : token.
-            /*token = synchronize(COLON_SET);
-            if (token.getType() == ASSIGNMENT) { //REPLACE COLON WITH ASSIGNMENT
-                token = nextToken(); // consume the :
-            }
-            else {
-                errorHandler.flag(token, MISSING_COLON, this);
-            }*/
-
-            // Parse the type specification.
-            TypeSpecificationParser typeSpecificationParser =
-                new TypeSpecificationParser(this);
-            TypeSpec type = typeSpecificationParser.parse(token);
-
-            return type;
-        }
 }

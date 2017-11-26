@@ -3,7 +3,6 @@ package wci.frontend.subc.tokens;
 import wci.frontend.*;
 import wci.frontend.subc.*;
 
-import static wci.frontend.Source.EOL;
 import static wci.frontend.Source.EOF;
 import static wci.frontend.subc.SubCTokenType.*;
 import static wci.frontend.subc.SubCErrorCode.*;
@@ -57,8 +56,8 @@ public class SubCStringToken extends SubCToken
 
             // Quote?  Each pair of adjacent quotes represents a single-quote.
             if (currentChar == '\"') {
-                while ((currentChar == '\"') && (peekChar() == '\"')) {
-                    textBuffer.append("''");
+                while ((currentChar == '\"') && (source.peekChar() == '\"')) {
+                    textBuffer.append("\"\"");
                     valueBuffer.append(currentChar); // append single-quote
                     currentChar = nextChar();        // consume pair of quotes
                     currentChar = nextChar();

@@ -68,7 +68,7 @@ public class CrossReferencer
         // Print cross-reference tables for any records defined in the routine.
         if (newRecordTypes.size() > 0) {
             printRecords(newRecordTypes);
-        }
+    }
 
         // Print any procedures and functions defined in the routine.
         ArrayList<SymTabEntry> routineIds =
@@ -144,7 +144,7 @@ public class CrossReferencer
                 // Print the type details only if the type is unnamed.
                 if (type.getIdentifier() == null) {
                     printTypeDetail(type, recordTypes);
-                }
+}
 
                 break;
             }
@@ -167,6 +167,8 @@ public class CrossReferencer
             }
 
             case VARIABLE: {
+                Object value = entry.getAttribute(CONSTANT_VALUE);
+                System.out.println(INDENT + "Value = " + toString(value));
 
                 // Print the type details only if the type is unnamed.
                 if (type.getIdentifier() == null) {

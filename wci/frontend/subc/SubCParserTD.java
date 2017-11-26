@@ -98,11 +98,6 @@ public class SubCParserTD extends Parser
             iCode.setRoot(rootNode);
             symTabStack.pop();
 
-            // Look for the final period.
-            /*token = currentToken();
-            if (token.getType() != DOT) {
-                errorHandler.flag(token, MISSING_PERIOD, this);
-            }*/
             token = currentToken();
 
             // Send the parser summary message.
@@ -135,15 +130,12 @@ public class SubCParserTD extends Parser
     public Token synchronize(EnumSet syncSet)
         throws Exception
     {
-    	//System.out.println(syncSet);
         Token token = currentToken();
 
-        //System.out.println(token.getType());
         // If the current token is not in the synchronization set,
         // then it is unexpected and the parser must recover.
         if (!syncSet.contains(token.getType())) {
-        	System.out.println(token.getType());
-        	System.out.println(syncSet);
+
             // Flag the unexpected token.
             errorHandler.flag(token, UNEXPECTED_TOKEN, this);
 
@@ -153,8 +145,8 @@ public class SubCParserTD extends Parser
                 token = nextToken();
             } while (!(token instanceof EofToken) &&
                      !syncSet.contains(token.getType()));
-       }
+        }
 
-       return token;
+        return token;
     }
 }

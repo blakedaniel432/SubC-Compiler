@@ -32,12 +32,12 @@ public class StatementParser extends SubCParserTD
 
     // Synchronization set for starting a statement.
     protected static final EnumSet<SubCTokenType> STMT_START_SET =
-        EnumSet.of(LEFT_BRACE, SubCTokenType.IF, WHILE,
-                   IDENTIFIER, SEMICOLON);
+        EnumSet.of(LEFT_BRACE, SWITCH, FOR, SubCTokenType.IF, DO, WHILE,
+                   IDENTIFIER, SEMICOLON,INT,CHAR,DOUBLE,FLOAT,CONST);
 
     // Synchronization set for following a statement.
     protected static final EnumSet<SubCTokenType> STMT_FOLLOW_SET =
-        EnumSet.of(SEMICOLON, RIGHT_BRACE, ELSE);
+        EnumSet.of(SEMICOLON, ELSE, WHILE, CASE);
 
     /**
      * Parse a statement.
@@ -50,7 +50,7 @@ public class StatementParser extends SubCParserTD
         throws Exception
     {
         ICodeNode statementNode = null;
-      
+
         switch ((SubCTokenType) token.getType()) {
 
             case LEFT_BRACE: {
@@ -68,19 +68,74 @@ public class StatementParser extends SubCParserTD
                 break;
             }
 
+            case INT:{
+                DeclarationsParser declarationsParser =
+                    new DeclarationsParser(this);
+                declarationsParser.parse(token);
+                statementNode = null;
+                break;
+            }
+            case CHAR:{
+                DeclarationsParser declarationsParser =
+                    new DeclarationsParser(this);
+                declarationsParser.parse(token);
+                statementNode = null;
+                break;
+            }
+            case FLOAT:{
+                DeclarationsParser declarationsParser =
+                    new DeclarationsParser(this);
+                declarationsParser.parse(token);
+                statementNode = null;
+                break;
+            }
+            case DOUBLE:{
+                DeclarationsParser declarationsParser =
+                    new DeclarationsParser(this);
+                declarationsParser.parse(token);
+                statementNode = null;
+                break;
+            }
+            case CONST:{
+                DeclarationsParser declarationsParser =
+                    new DeclarationsParser(this);
+                declarationsParser.parse(token);
+                statementNode = null;
+                break;
+            }
+
+            case DO: {
+                RepeatStatementParser repeatParser =
+                    new RepeatStatementParser(this);
+                statementNode = repeatParser.parse(token);
+                break;
+            }
+
             case WHILE: {
                 WhileStatementParser whileParser =
                     new WhileStatementParser(this);
                 statementNode = whileParser.parse(token);
                 break;
             }
-
+            /*
+            case FOR: {
+                ForStatementParser forParser = new ForStatementParser(this);
+                statementNode = forParser.parse(token);
+                break;
+            }
+            */
             case IF: {
                 IfStatementParser ifParser = new IfStatementParser(this);
                 statementNode = ifParser.parse(token);
                 break;
             }
-
+            /*
+            case SWITCH: {
+                CaseStatementParser caseParser = new CaseStatementParser(this);
+                statementNode = caseParser.parse(token);
+                break;
+            }
+            */
             default: {
                 statementNode = ICodeFactory.createICodeNode(NO_OP);
                 break;
@@ -117,11 +172,11 @@ public class StatementParser extends SubCParserTD
                              SubCTokenType terminator,
                              SubCErrorCode errorCode)
         throws Exception
-    {        
+    {
         // Synchronization set for the terminator.
         EnumSet<SubCTokenType> terminatorSet = STMT_START_SET.clone();
         terminatorSet.add(terminator);
-        
+
         // Loop to parse each statement until the END token
         // or the end of the source file.
         while (!(token instanceof EofToken) &&
@@ -140,9 +195,9 @@ public class StatementParser extends SubCParserTD
             }
 
             // If at the start of the next statement, then missing a semicolon.
-            /*else if (STMT_START_SET.contains(tokenType)) {
-                errorHandler.flag(token, MISSING_SEMICOLON, this);
-            }*/
+            //else if (STMT_START_SET.contains(tokenType)) {
+            //   errorHandler.flag(token, MISSING_SEMICOLON, this);
+            //}
 
             // Synchronize at the start of the next statement
             // or at the terminator.
@@ -151,7 +206,7 @@ public class StatementParser extends SubCParserTD
 
         // Look for the terminator token.
         if (token.getType() == terminator) {
-            token = nextToken();  // consume the terminator token
+            token = nextToken();
         }
         else {
             errorHandler.flag(token, errorCode, this);

@@ -74,8 +74,8 @@ public class ParseTreePrinter
         // Print the intermediate code in the routine's symbol table entry.
         ICode iCode = (ICode) routineId.getAttribute(ROUTINE_ICODE);
         if (iCode.getRoot() != null) {
-            printNode((ICodeNodeImpl) iCode.getRoot());
-        }
+        printNode((ICodeNodeImpl) iCode.getRoot());
+    }
 
         // Print any procedures and functions defined in the routine.
         ArrayList<SymTabEntry> routineIds =
@@ -184,31 +184,7 @@ public class ParseTreePrinter
      */
     private void printTypeSpec(ICodeNodeImpl node)
     {
-        TypeSpec typeSpec = node.getTypeSpec();
-
-        if (typeSpec != null) {
-            String saveMargin = indentation;
-            indentation += indent;
-
-            String typeName;
-            SymTabEntry typeId = typeSpec.getIdentifier();
-
-            // Named type: Print the type identifier's name.
-            if (typeId != null) {
-                typeName = typeId.getName();
-            }
-
-            // Unnamed type: Print an artificial type identifier name.
-            else {
-                int code = typeSpec.hashCode() + typeSpec.getForm().hashCode();
-                typeName = "$anon_" + Integer.toHexString(code);
-            }
-
-            printAttribute("TYPE_ID", typeName);
-            indentation = saveMargin;
-        }
     }
-
 
     /**
      * Append text to the output line.

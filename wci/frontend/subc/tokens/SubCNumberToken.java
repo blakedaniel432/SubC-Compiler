@@ -53,10 +53,9 @@ public class SubCNumberToken extends SubCToken
         String fractionDigits = null;  // digits after the decimal point
         String exponentDigits = null;  // exponent digits
         char exponentSign = '+';       // exponent sign '+' or '-'
-        //boolean sawDotDot = false;     // true if saw .. token
         char currentChar;              // current character
 
-        type = INT;  // assume INTEGER token type for now
+        type = INTEGER;  // assume INTEGER token type for now
 
         // Extract the digits of the whole part of the number.
         wholeDigits = unsignedIntegerDigits(textBuffer);
@@ -68,10 +67,12 @@ public class SubCNumberToken extends SubCToken
         // It could be a decimal point or the start of a .. token.
         currentChar = currentChar();
         if (currentChar == '.') {
-            /*if (peekChar() == '.') {
-                sawDotDot = true;  // it's a ".." token, so don't consume it
+            if (!Character.isDigit(source.peekChar())) {
+              type = ERROR;
+              value = INVALID_NUMBER;
+              return;
             }
-            else*/ {
+            else {
                 type = REAL;  // decimal point, so token type is REAL
                 textBuffer.append(currentChar);
                 currentChar = nextChar();  // consume decimal point
@@ -87,7 +88,7 @@ public class SubCNumberToken extends SubCToken
         // Is there an exponent part?
         // There cannot be an exponent if we already saw a ".." token.
         currentChar = currentChar();
-        if (/*!sawDotDot && */((currentChar == 'E') || (currentChar == 'e'))) {
+        if (((currentChar == 'E') || (currentChar == 'e'))) {
             type = REAL;  // exponent, so token type is REAL
             textBuffer.append(currentChar);
             currentChar = nextChar();  // consume 'E' or 'e'
@@ -104,7 +105,7 @@ public class SubCNumberToken extends SubCToken
         }
 
         // Compute the value of an integer number token.
-        if (type == INT) {
+        if (type == INTEGER) {
             int integerValue = computeIntegerValue(wholeDigits);
 
             if (type != ERROR) {
@@ -121,8 +122,6 @@ public class SubCNumberToken extends SubCToken
                 value = new Float(floatValue);
             }
         }
-        
-        
     }
 
     /**

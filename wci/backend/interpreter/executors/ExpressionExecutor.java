@@ -66,12 +66,6 @@ public class ExpressionExecutor extends StatementExecutor
                 // Return the string value.
                 return (String) node.getAttribute(VALUE);
             }
-            
-            case CHAR_CONSTANT: {
-
-                // Return the string value.
-                return (String) node.getAttribute(VALUE);
-            }
 
             case NEGATE: {
 
@@ -107,7 +101,7 @@ public class ExpressionExecutor extends StatementExecutor
 
     // Set of arithmetic operator node types.
     private static final EnumSet<ICodeNodeTypeImpl> ARITH_OPS =
-        EnumSet.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD);
+        EnumSet.of(ADD, SUBTRACT, MULTIPLY, FLOAT_DIVIDE, INTEGER_DIVIDE, MOD);
 
     /**
      * Execute a binary operator.
@@ -145,7 +139,19 @@ public class ExpressionExecutor extends StatementExecutor
                     case SUBTRACT: return value1 - value2;
                     case MULTIPLY: return value1 * value2;
 
-                    case DIVIDE: {
+                    case FLOAT_DIVIDE: {
+
+                        // Check for division by zero.
+                        if (value2 != 0) {
+                            return ((float) value1)/((float) value2);
+                        }
+                        else {
+                            errorHandler.flag(node, DIVISION_BY_ZERO, this);
+                            return 0;
+                        }
+                    }
+
+                    case INTEGER_DIVIDE: {
 
                         // Check for division by zero.
                         if (value2 != 0) {
@@ -182,7 +188,7 @@ public class ExpressionExecutor extends StatementExecutor
                     case SUBTRACT: return value1 - value2;
                     case MULTIPLY: return value1 * value2;
 
-                    case DIVIDE: {
+                    case FLOAT_DIVIDE: {
 
                         // Check for division by zero.
                         if (value2 != 0.0f) {

@@ -7,10 +7,9 @@ int fahrenheit;
 int number;
 int root;
 int dze;
-char character;
 
 {
-	
+	char character;
     { //Temperature conversions
         five = -1 + TWO - 3 + 4 + 3;
         ratio = five/9.0;
@@ -47,5 +46,5 @@ char character;
         root = (number/root + root)/2;
     }
 
-    character = 'a';
+    character = "a";
 }

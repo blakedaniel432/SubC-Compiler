@@ -57,7 +57,7 @@ public class TypeDefinitionsParser extends DeclarationsParser
     private static final EnumSet<SubCTokenType> NEXT_START_SET =
         DeclarationsParser.VAR_START_SET.clone();
     static {
-        NEXT_START_SET.add(SEMICOLON);
+        //NEXT_START_SET.add(SEMICOLON);
         NEXT_START_SET.add(IDENTIFIER);
     }
 
@@ -69,12 +69,17 @@ public class TypeDefinitionsParser extends DeclarationsParser
     public void parse(Token token)
         throws Exception
     {
+        // Parse the type specification.
+        TypeSpecificationParser typeSpecificationParser =
+            new TypeSpecificationParser(this);
+        TypeSpec type = typeSpecificationParser.parse(token);
+
         token = synchronize(IDENTIFIER_SET);
 
         // Loop to parse a sequence of type definitions
         // separated by semicolons.
         while (token.getType() == IDENTIFIER) {
-            String name = token.getText(); //REMOVE .toLowerCase()
+            String name = token.getText().toLowerCase();
             SymTabEntry typeId = symTabStack.lookupLocal(name);
 
             // Enter the new identifier into the symbol table
@@ -91,18 +96,13 @@ public class TypeDefinitionsParser extends DeclarationsParser
             token = nextToken();  // consume the identifier token
 
             // Synchronize on the = token.
-            token = synchronize(EQUALS_SET);
-            if (token.getType() == EQUALS) {
-                token = nextToken();  // consume the =
-            }
-            else {
-                errorHandler.flag(token, MISSING_EQUALS, this);
-            }
-
-            // Parse the type specification.
-            TypeSpecificationParser typeSpecificationParser =
-                new TypeSpecificationParser(this);
-            TypeSpec type = typeSpecificationParser.parse(token);
+            // token = synchronize(EQUALS_SET);
+            // if (token.getType() == EQUALS) {
+            //     token = nextToken();  // consume the =
+            // }
+            // else {
+            //     errorHandler.flag(token, MISSING_EQUALS, this);
+            // }
 
             // Set identifier to be a type and set its type specificationt.
             if (typeId != null) {
@@ -123,20 +123,19 @@ public class TypeDefinitionsParser extends DeclarationsParser
             token = currentToken();
             TokenType tokenType = token.getType();
 
-            // Look for one or more semicolons after a definition.
-            if (tokenType == SEMICOLON) {
-                while (token.getType() == SEMICOLON) {
-                    token = nextToken();  // consume the ;
-                }
+            // Look for one or more colons after a definition.
+            if (tokenType == COLON) {
+                token = nextToken();  // consume the ,
+                token = synchronize(IDENTIFIER_SET);
             }
 
             // If at the start of the next definition or declaration,
             // then missing a semicolon.
             else if (NEXT_START_SET.contains(tokenType)) {
                 errorHandler.flag(token, MISSING_SEMICOLON, this);
+                token = synchronize(FOLLOW_SET);
+                break;
             }
-
-            token = synchronize(IDENTIFIER_SET);
         }
     }
 }

@@ -12,7 +12,7 @@ import static wci.intermediate.typeimpl.TypeKeyImpl.*;
 /**
  * <h1>Predefined</h1>
  *
- * <p>Enter the predefined Pascal types, identifiers, and constants
+ * <p>Enter the predefined SubC types, identifiers, and constants
  * into the symbol table.</p>
  *
  * <p>Copyright (c) 2009 by Ronald Mak</p>
@@ -52,7 +52,7 @@ public class Predefined
     private static void initializeTypes(SymTabStack symTabStack)
     {
         // Type integer.
-        integerId = symTabStack.enterLocal("int");
+        integerId = symTabStack.enterLocal("integer");
         integerType = TypeFactory.createType(SCALAR);
         integerType.setIdentifier(integerId);
         integerId.setDefinition(DefinitionImpl.TYPE);
@@ -90,13 +90,13 @@ public class Predefined
     private static void initializeConstants(SymTabStack symTabStack)
     {
         // Boolean enumeration constant false.
-        falseId = symTabStack.enterLocal("false");
+        falseId = symTabStack.enterLocal("0");
         falseId.setDefinition(DefinitionImpl.ENUMERATION_CONSTANT);
         falseId.setTypeSpec(booleanType);
         falseId.setAttribute(CONSTANT_VALUE, new Integer(0));
 
         // Boolean enumeration constant true.
-        trueId = symTabStack.enterLocal("true");
+        trueId = symTabStack.enterLocal("1");
         trueId.setDefinition(DefinitionImpl.ENUMERATION_CONSTANT);
         trueId.setTypeSpec(booleanType);
         trueId.setAttribute(CONSTANT_VALUE, new Integer(1));

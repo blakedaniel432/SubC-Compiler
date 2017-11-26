@@ -2,6 +2,8 @@ package wci.frontend.subc.parsers;
 
 import java.util.EnumSet;
 
+//import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
+
 import wci.frontend.*;
 import wci.frontend.subc.*;
 import wci.intermediate.*;
@@ -31,25 +33,28 @@ public class DeclarationsParser extends SubCParserTD
     }
 
     static final EnumSet<SubCTokenType> DECLARATION_START_SET =
-        EnumSet.of(CONST, VAR, PROCEDURE, FUNCTION, LEFT_BRACE, IDENTIFIER); //ADDED IDENTIFIER
+        EnumSet.of(CONST, TYPEDEF, INT, DOUBLE, FLOAT, CHAR);
 
     static final EnumSet<SubCTokenType> TYPE_START_SET =
         DECLARATION_START_SET.clone();
-    /*static {
+    static {
         TYPE_START_SET.remove(CONST);
-    }*/
+    }
 
     static final EnumSet<SubCTokenType> VAR_START_SET =
-    	TYPE_START_SET.clone();
-    /*static {
-        VAR_START_SET.remove(TYPE);
-    }*/
-    
+        TYPE_START_SET.clone();
+    static {
+        VAR_START_SET.remove(TYPEDEF);
+    }
+
     static final EnumSet<SubCTokenType> ROUTINE_START_SET =
         VAR_START_SET.clone();
-    /*static {
-        ROUTINE_START_SET.remove(VAR);
-    }*/
+    static {
+        ROUTINE_START_SET.remove(INT);
+        ROUTINE_START_SET.remove(DOUBLE);
+        ROUTINE_START_SET.remove(FLOAT);
+        ROUTINE_START_SET.remove(CHAR);
+    }
 
     /**
      * Parse declarations.
@@ -60,7 +65,8 @@ public class DeclarationsParser extends SubCParserTD
     public void parse(Token token)
         throws Exception
     {
-        token = synchronize(DECLARATION_START_SET);
+        //ICodeNode declarationNode = null;
+        //token = synchronize(DECLARATION_START_SET);
 
         if (token.getType() == CONST) {
             token = nextToken();  // consume CONST
@@ -70,19 +76,19 @@ public class DeclarationsParser extends SubCParserTD
             constantDefinitionsParser.parse(token);
         }
 
-        /*token = synchronize(TYPE_START_SET);
+        //  token = synchronize(TYPE_START_SET);
 
-        if (token.getType() == TYPE) {
-            token = nextToken();  // consume TYPE
+        // if (token.getType() == TYPEDEF) {
+        //     token = nextToken();  // consume TYPEDEF
 
-            TypeDefinitionsParser typeDefinitionsParser =
-                new TypeDefinitionsParser(this);
-            typeDefinitionsParser.parse(token);
-        }*/
+        //     TypeDefinitionsParser typeDefinitionsParser =
+        //         new TypeDefinitionsParser(this);
+        //     typeDefinitionsParser.parse(token);
+        // }
 
-        token = synchronize(VAR_START_SET);
+        //token = synchronize(VAR_START_SET);
 
-        if (token.getType() == IDENTIFIER) {
+        else if (VAR_START_SET.contains(token.getType())){
             //token = nextToken();  // consume VAR
 
             VariableDeclarationsParser variableDeclarationsParser =
@@ -91,6 +97,7 @@ public class DeclarationsParser extends SubCParserTD
             variableDeclarationsParser.parse(token);
         }
 
-        token = synchronize(ROUTINE_START_SET);
+        //return declarationNode;
+        //token = synchronize(ROUTINE_START_SET);
     }
 }
