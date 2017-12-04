@@ -47,12 +47,12 @@ public class BlockParser extends SubCParserTD {
 	 *             if an error occurred.
 	 */
 	public ICodeNode parse(Token token, SymTabEntry routineId) throws Exception {
-		//while (token.getType() != LEFT_BRACE) {
+		//PARSE ALL BEFORE START
+		while (token.getType() != LEFT_BRACE) {
 			DeclarationsParser declarationsParser = new DeclarationsParser(this);
-			// Parse any declarations.
 			declarationsParser.parse(token);
 			token = currentToken();
-		//} REMOVE IF PROBLEMS
+		}
 
 		StatementParser statementParser = new StatementParser(this);
 

@@ -1,9 +1,9 @@
-{ 
-	int centigrade;
-	int five;
-	int ratio;
-	int fahrenheit;
-	int number;
+int centigrade;
+int five;
+int ratio;
+int fahrenheit;
+int number;
+{
 	int root;
 	int dze;
 	char character;

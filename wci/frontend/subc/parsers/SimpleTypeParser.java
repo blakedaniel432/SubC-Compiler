@@ -98,8 +98,8 @@ class SimpleTypeParser extends TypeSpecificationParser {
 					return subrangeTypeParser.parse(token);
 				}*/
 			} else {
-				// errorHandler.flag(token, IDENTIFIER_UNDEFINED, this);
-				// token = nextToken(); // consume the identifier
+				/* errorHandler.flag(token, IDENTIFIER_UNDEFINED, this);
+				token = nextToken(); // consume the identifier*/
 				return null;
 			}
 		}

@@ -14,8 +14,6 @@ import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 import static wci.intermediate.typeimpl.TypeFormImpl.*;
 import static wci.intermediate.typeimpl.TypeKeyImpl.*;
-//import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
-//import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
 /**
  * <h1>VariableDeclarationsParser</h1>
@@ -78,8 +76,6 @@ public class VariableDeclarationsParser extends DeclarationsParser {
 	 *             if an error occurred.
 	 */
 	public void parse(Token token) throws Exception {
-		// ICodeNode variableDeclarationNode =
-		// ICodeFactory.createICodeNode(VARIABLE_DECLARE);
 		// Parse the type specification.
 		type = parseTypeSpec(token);
 		token = synchronize(IDENTIFIER_SET);
@@ -190,14 +186,6 @@ public class VariableDeclarationsParser extends DeclarationsParser {
 			}
 
 			token = nextToken(); // consume the identifier token
-			if (token.getType() == EQUALS) {
-				token = nextToken(); // consume the =
-				// Parse the constant value.
-				Object value = parseConstant(token);
-				id.setAttribute(CONSTANT_VALUE, value);
-			} else {
-				id.setAttribute(CONSTANT_VALUE, 0);
-			}
 
 		} else {
 			errorHandler.flag(token, MISSING_IDENTIFIER, this);
@@ -205,139 +193,6 @@ public class VariableDeclarationsParser extends DeclarationsParser {
 
 		return id;
 	}
-
-	// Synchronization set for starting a constant.
-	static final EnumSet<SubCTokenType> CONSTANT_START_SET = EnumSet.of(IDENTIFIER, INTEGER, REAL, PLUS, MINUS, STRING,
-			SEMICOLON, COMMA);
-
-	/**
-	 * Parse a constant value.
-	 * 
-	 * @param token
-	 *            the current token.
-	 * @return the constant value.
-	 * @throws Exception
-	 *             if an error occurred.
-	 */
-	protected Object parseConstant(Token token) throws Exception {
-		TokenType sign = null;
-
-		// Synchronize at the start of a constant.
-		token = synchronize(CONSTANT_START_SET);
-		TokenType tokenType = token.getType();
-		// Plus or minus sign?
-		if ((tokenType == PLUS) || (tokenType == MINUS)) {
-			sign = tokenType;
-			token = nextToken(); // consume sign
-		}
-
-		// Parse the constant.
-		switch ((SubCTokenType) token.getType()) {
-
-		case IDENTIFIER: {
-			return parseIdentifierConstant(token, sign);
-		}
-
-		case INTEGER: {
-			if (type.getIdentifier().getName() != "integer") {
-				errorHandler.flag(token, INCOMPATIBLE_ASSIGNMENT, this);
-			}
-			Integer value = (Integer) token.getValue();
-			nextToken(); // consume the number
-			return sign == MINUS ? -value : value;
-		}
-
-		case REAL: {
-			if (type.getIdentifier().getName() != "real") {
-				errorHandler.flag(token, INCOMPATIBLE_ASSIGNMENT, this);
-			}
-			Float value = (Float) token.getValue();
-			nextToken(); // consume the number
-			return sign == MINUS ? -value : value;
-		}
-
-		case STRING: {
-			if (type.getIdentifier().getName() != "char") {
-				errorHandler.flag(token, INCOMPATIBLE_ASSIGNMENT, this);
-			}
-			if (sign != null) {
-				errorHandler.flag(token, INVALID_CONSTANT, this);
-			}
-
-			nextToken(); // consume the string
-			return (String) token.getValue();
-		}
-
-		default: {
-			errorHandler.flag(token, INVALID_CONSTANT, this);
-			return null;
-		}
-		}
-	}
-
-	/**
-	 * Parse an identifier constant.
-	 * 
-	 * @param token
-	 *            the current token.
-	 * @param sign
-	 *            the sign, if any.
-	 * @return the constant value.
-	 * @throws Exception
-	 *             if an error occurred.
-	 */
-	protected Object parseIdentifierConstant(Token token, TokenType sign) throws Exception {
-		String name = token.getText(); //REMOVED .toLowerCase()
-		SymTabEntry id = symTabStack.lookup(name);
-
-		nextToken(); // consume the identifier
-
-		// The identifier must have already been defined
-		// as an constant identifier.
-		if (id == null) {
-			errorHandler.flag(token, IDENTIFIER_UNDEFINED, this);
-			return null;
-		}
-
-		Definition definition = id.getDefinition();
-
-		if (definition == CONSTANT) {
-			Object value = id.getAttribute(CONSTANT_VALUE);
-			id.appendLineNumber(token.getLineNumber());
-
-			if (value instanceof Integer) {
-				return sign == MINUS ? -((Integer) value) : value;
-			} else if (value instanceof Float) {
-				return sign == MINUS ? -((Float) value) : value;
-			} else if (value instanceof String) {
-				if (sign != null) {
-					errorHandler.flag(token, INVALID_CONSTANT, this);
-				}
-
-				return value;
-			} else {
-				return null;
-			}
-		} else if (definition == ENUMERATION_CONSTANT) {
-			Object value = id.getAttribute(CONSTANT_VALUE);
-			id.appendLineNumber(token.getLineNumber());
-
-			if (sign != null) {
-				errorHandler.flag(token, INVALID_CONSTANT, this);
-			}
-
-			return value;
-		} else if (definition == null) {
-			errorHandler.flag(token, NOT_CONSTANT_IDENTIFIER, this);
-			return null;
-		} else {
-			errorHandler.flag(token, INVALID_CONSTANT, this);
-			return null;
-		}
-	}
-
-	// Synchronization set for the : token.
-	private static final EnumSet<SubCTokenType> COLON_SET = EnumSet.of(SEMICOLON);
 
 	/**
 	 * Parse the type specification.

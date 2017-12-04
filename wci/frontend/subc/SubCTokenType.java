@@ -24,10 +24,10 @@ public enum SubCTokenType implements TokenType {
 	IF, INT, CHAR, CONST, VAR, PROCEDURE, FUNCTION, WHILE, MAIN, ELSE, RETURN,
 
 	// Special symbols.
-	PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), MOD("%"), PERIOD("."), SEMICOLON(";"), DBQUOTE("\""), EQUALS(
-			"="), EQUALS_EQUALS("=="), NOT_EQUALS("!="), LESS_THAN("<"), LESS_EQUALS("<="), GREATER_EQUALS(
-					">="), GREATER_THAN(">"), LEFT_PAREN("("), RIGHT_PAREN(")"), LEFT_BRACKET("["), RIGHT_BRACKET(
-							"]"), LEFT_BRACE("{"), RIGHT_BRACE("}"), COMMA(","), AND("&&"), OR("||"), NOT("!"),
+	PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), MOD("%"), PERIOD("."), SEMICOLON(";"), DBQUOTE("\""), EQUALS("="), 
+	EQUALS_EQUALS("=="), NOT_EQUALS("!="), LESS_THAN("<"), LESS_EQUALS("<="), GREATER_EQUALS(">="), 
+	GREATER_THAN(">"), LEFT_PAREN("("), RIGHT_PAREN(")"), LEFT_BRACKET("["), RIGHT_BRACKET("]"), 
+	LEFT_BRACE("{"), RIGHT_BRACE("}"), COMMA(","), AND("&&"), OR("||"), NOT("!"),
 
 	IDENTIFIER, INTEGER, REAL, CHARACTER, STRING, ERROR, END_OF_FILE;
 
