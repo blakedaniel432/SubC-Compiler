@@ -5,9 +5,11 @@ import java.util.EnumSet;
 import wci.frontend.*;
 import wci.frontend.subc.*;
 import wci.intermediate.*;
+import wci.intermediate.symtabimpl.*;
 
 import static wci.frontend.subc.SubCTokenType.*;
 import static wci.frontend.subc.SubCErrorCode.*;
+import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
@@ -41,7 +43,7 @@ public class StatementParser extends SubCParserTD {
 			IDENTIFIER, SEMICOLON, INT, CHAR, CONST);
 
 	// Synchronization set for following a statement.
-	protected static final EnumSet<SubCTokenType> STMT_FOLLOW_SET = EnumSet.of(SEMICOLON, ELSE, WHILE);
+	protected static final EnumSet<SubCTokenType> STMT_FOLLOW_SET = EnumSet.of(SEMICOLON, ELSE, WHILE, RIGHT_BRACE); //ADDED RIGHT BRACE
 
 	/**
 	 * Parse a statement. To be overridden by the specialized statement parser
@@ -64,30 +66,49 @@ public class StatementParser extends SubCParserTD {
 			break;
 		}
 
-		// An assignment statement begins with a variable's identifier.
 		case IDENTIFIER: {
-			AssignmentStatementParser assignmentParser = new AssignmentStatementParser(this);
-			statementNode = assignmentParser.parse(token);
+			String name = token.getText().toLowerCase();
+			SymTabEntry id = symTabStack.lookup(name);
+			Definition idDefn = id != null ? id.getDefinition() : UNDEFINED;
+
+			// Assignment statement or procedure call.
+			switch ((DefinitionImpl) idDefn) {
+
+			case VARIABLE:
+			case VALUE_PARM:
+			case VAR_PARM:
+			case UNDEFINED: {
+				AssignmentStatementParser assignmentParser = new AssignmentStatementParser(this);
+				statementNode = assignmentParser.parse(token);
+				break;
+			}
+
+			case FUNCTION: {
+				AssignmentStatementParser assignmentParser = new AssignmentStatementParser(this);
+				statementNode = assignmentParser.parseFunctionNameAssignment(token);
+				break;
+			}
+
+			case PROCEDURE: {
+				CallParser callParser = new CallParser(this);
+				statementNode = callParser.parse(token);
+				break;
+			}
+
+			default: {
+				errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+				token = nextToken(); // consume identifier
+			}
+			}
+
 			break;
 		}
 
+		case CONST:
+		case CHAR:
 		case INT: {
 			DeclarationsParser declarationsParser = new DeclarationsParser(this);
-			declarationsParser.parse(token);
-			statementNode = null;
-			break;
-		}
-
-		case CHAR: {
-			DeclarationsParser declarationsParser = new DeclarationsParser(this);
-			declarationsParser.parse(token);
-			statementNode = null;
-			break;
-		}
-
-		case CONST: {
-			DeclarationsParser declarationsParser = new DeclarationsParser(this);
-			declarationsParser.parse(token);
+			declarationsParser.parse(token, null); //ADDED NULL
 			statementNode = null;
 			break;
 		}
@@ -134,7 +155,7 @@ public class StatementParser extends SubCParserTD {
 	 * Parse a statement list.
 	 * 
 	 * @param token
-	 *            the current token.
+	 *            the curent token.
 	 * @param parentNode
 	 *            the parent node of the statement list.
 	 * @param terminator
@@ -178,7 +199,7 @@ public class StatementParser extends SubCParserTD {
 
 		// Look for the terminator token.
 		if (token.getType() == terminator) {
-			token = nextToken();
+			token = nextToken(); // consume the terminator token
 		} else {
 			errorHandler.flag(token, errorCode, this);
 		}

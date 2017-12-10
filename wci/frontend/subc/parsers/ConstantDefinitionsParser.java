@@ -15,8 +15,6 @@ import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 import static wci.intermediate.typeimpl.TypeFormImpl.*;
 import static wci.intermediate.typeimpl.TypeKeyImpl.*;
-//import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
-//import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
 /**
  * <h1>ConstantDefinitionsParser</h1>
@@ -33,14 +31,14 @@ import static wci.intermediate.typeimpl.TypeKeyImpl.*;
  * </p>
  */
 public class ConstantDefinitionsParser extends DeclarationsParser {
-	protected TypeSpec constantType;
-
 	/**
 	 * Constructor.
 	 * 
 	 * @param parent
 	 *            the parent parser.
 	 */
+	protected TypeSpec constantType;
+	
 	public ConstantDefinitionsParser(SubCParserTD parent) {
 		super(parent);
 	}
@@ -77,20 +75,22 @@ public class ConstantDefinitionsParser extends DeclarationsParser {
 	 * 
 	 * @param token
 	 *            the initial token.
+	 * @param parentId
+	 *            the symbol table entry of the parent routine's name.
+	 * @return null
 	 * @throws Exception
 	 *             if an error occurred.
 	 */
-	public void parse(Token token) throws Exception {
-		// ICodeNode constantNode = ICodeFactory.createICodeNode(INTEGER_CONSTANT);
+	public SymTabEntry parse(Token token, SymTabEntry parentId) throws Exception {
 		constantType = parseTypeSpec(token);
 		if (constantType == null) {
 			constantType = Predefined.integerType;
 		}
-
+		
 		token = synchronize(IDENTIFIER_SET);
 
 		// Loop to parse a sequence of constant definitions
-		// separated by comma.
+		// separated by semicolons.
 		while (token.getType() == IDENTIFIER) {
 			String name = token.getText(); //REMOVED .toLowerCase()
 			SymTabEntry constantId = symTabStack.lookupLocal(name);
@@ -106,6 +106,8 @@ public class ConstantDefinitionsParser extends DeclarationsParser {
 			}
 
 			token = nextToken(); // consume the identifier token
+
+			// Synchronize on the = token.
 			token = synchronize(EQUALS_SET);
 			if (token.getType() == EQUALS) {
 				token = nextToken(); // consume the =
@@ -123,6 +125,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser {
 			}
 
 			// Parse the constant value.
+			// Token constantToken = token;
 			Object value = parseConstant(token);
 
 			// Set identifier to be a constant and set its value.
@@ -141,6 +144,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser {
 			} else if (NEXT_START_SET.contains(tokenType)) {
 				errorHandler.flag(token, MISSING_COMMA, this);
 			}
+			
 			token = synchronize(IDENTIFIER_SET);
 		}
 
@@ -148,6 +152,8 @@ public class ConstantDefinitionsParser extends DeclarationsParser {
 			errorHandler.flag(token, MISSING_SEMICOLON, this);
 		else
 			nextToken();
+		
+		return null;
 	}
 
 	/**
@@ -199,9 +205,8 @@ public class ConstantDefinitionsParser extends DeclarationsParser {
 			nextToken(); // consume the string
 			return (String) token.getValue();
 		}
-
+		
 		case COMMA:
-
 		case SEMICOLON: {
 			if (constantType == Predefined.integerType) {
 				return (int) 0;
@@ -296,7 +301,7 @@ public class ConstantDefinitionsParser extends DeclarationsParser {
 
 		return type;
 	}
-
+	
 	/**
 	 * Return the type of a constant given its value.
 	 * 

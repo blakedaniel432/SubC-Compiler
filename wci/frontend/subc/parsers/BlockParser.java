@@ -50,7 +50,7 @@ public class BlockParser extends SubCParserTD {
 		//PARSE ALL BEFORE START
 		while (token.getType() != LEFT_BRACE) {
 			DeclarationsParser declarationsParser = new DeclarationsParser(this);
-			declarationsParser.parse(token);
+			declarationsParser.parse(token, routineId);
 			token = currentToken();
 		}
 

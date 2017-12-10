@@ -68,14 +68,17 @@ public class TypeDefinitionsParser extends DeclarationsParser {
 	 * 
 	 * @param token
 	 *            the initial token.
+	 * @param parentId
+	 *            the symbol table entry of the parent routine's name.
+	 * @return null
 	 * @throws Exception
 	 *             if an error occurred.
 	 */
-	public void parse(Token token) throws Exception {
+	public SymTabEntry parse(Token token, SymTabEntry parentId) throws Exception {
 		// Parse the type specification.
 		TypeSpecificationParser typeSpecificationParser = new TypeSpecificationParser(this);
 		TypeSpec type = typeSpecificationParser.parse(token);
-
+		
 		token = synchronize(IDENTIFIER_SET);
 
 		// Loop to parse a sequence of type definitions
@@ -99,10 +102,9 @@ public class TypeDefinitionsParser extends DeclarationsParser {
 			// Synchronize on the = token.
 			// token = synchronize(EQUALS_SET);
 			// if (token.getType() == EQUALS) {
-			// token = nextToken(); // consume the =
-			// }
-			// else {
-			// errorHandler.flag(token, MISSING_EQUALS, this);
+			// 	token = nextToken(); // consume the =
+			// } else {
+			// 	errorHandler.flag(token, MISSING_EQUALS, this);
 			// }
 
 			// Set identifier to be a type and set its type specificationt.
@@ -120,18 +122,25 @@ public class TypeDefinitionsParser extends DeclarationsParser {
 				token = synchronize(FOLLOW_SET);
 			}
 
-			/*
-			 * token = currentToken(); TokenType tokenType = token.getType();
-			 * 
-			 * // Look for one or more colons after a definition. if (tokenType ==
-			 * SEMICOLON) { token = nextToken(); // consume the , token =
-			 * synchronize(IDENTIFIER_SET); }
-			 * 
-			 * // If at the start of the next definition or declaration, // then missing a
-			 * semicolon. else if (NEXT_START_SET.contains(tokenType)) {
-			 * errorHandler.flag(token, MISSING_SEMICOLON, this); token =
-			 * synchronize(FOLLOW_SET); break; }
-			 */ // UNCOMMENT IF TROUBLE
+			/*token = currentToken();
+			TokenType tokenType = token.getType();
+
+			// Look for one or more semicolons after a definition.
+			if (tokenType == SEMICOLON) {
+				while (token.getType() == SEMICOLON) {
+					token = nextToken(); // consume the ;
+				}
+			}
+
+			// If at the start of the next definition or declaration,
+			// then missing a semicolon.
+			else if (NEXT_START_SET.contains(tokenType)) {
+				errorHandler.flag(token, MISSING_SEMICOLON, this);
+			}
+
+			token = synchronize(IDENTIFIER_SET);*/ //UNCOMMENT IF TROUBLE
 		}
+
+		return null;
 	}
 }

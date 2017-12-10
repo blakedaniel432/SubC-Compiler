@@ -21,7 +21,7 @@ import wci.frontend.TokenType;
  */
 public enum SubCTokenType implements TokenType {
 	// Reserved words.
-	IF, INT, CHAR, CONST, VAR, PROCEDURE, FUNCTION, WHILE, MAIN, ELSE, RETURN,
+	IF, INT, CHAR, CONST, VAR, PROGRAM, PROCEDURE, FUNCTION, WHILE, ELSE, RETURN,
 
 	// Special symbols.
 	PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), MOD("%"), PERIOD("."), SEMICOLON(";"), DBQUOTE("\""), EQUALS("="), 
