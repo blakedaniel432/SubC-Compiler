@@ -22,10 +22,20 @@ import wci.intermediate.*;
  * </p>
  */
 public class SymTabImpl extends TreeMap<String, SymTabEntry> implements SymTab {
-	private int nestingLevel;
+	private int nestingLevel; // scope nesting level of this entry
+	private int slotNumber; // local variables array slot number
+	private int maxSlotNumber; // max slot number value
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param nestingLevel
+	 *            the nesting level of this entry.
+	 */
 	public SymTabImpl(int nestingLevel) {
 		this.nestingLevel = nestingLevel;
+		this.slotNumber = -1;
+		this.maxSlotNumber = 0;
 	}
 
 	/**
@@ -76,5 +86,20 @@ public class SymTabImpl extends TreeMap<String, SymTabEntry> implements SymTab {
 		}
 
 		return list; // sorted list of entries
+	}
+
+	/**
+	 * @return the next local variables array slot number.
+	 */
+	public int nextSlotNumber() {
+		maxSlotNumber = ++slotNumber;
+		return slotNumber;
+	}
+
+	/**
+	 * @return the maximum local variables array slot number.
+	 */
+	public int maxSlotNumber() {
+		return maxSlotNumber;
 	}
 }

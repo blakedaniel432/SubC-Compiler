@@ -1,66 +1,68 @@
-program test;
+//FrankenC by Blake and Daniel
 
-procedure testFunction;
+program testprog;
+
+procedure programStart;
 {
-	writeln("Hi, Dr. Wang!");
+	writeln("***Program Started!***");
 }
 
-int centigrade;
-int five;
+procedure programEnd;
+{
+	writeln("***Program Ended!***");
+}
+
+int six;
 int ratio;
-int fahrenheit;
 int number;
 {
 	int root;
 	char character;
 	
-	testFunction;
+	programStart;
 	
-    { //Temperature conversions
+    { //Sample program
         const int TWO = 2;
         const int THREE = 3;
 		
-        five = -1 + TWO - THREE + 4 + 3;       
-        ratio = five/9.0;
+        six = -1 + TWO - THREE + 3 + 5;       
+        ratio = six/2;
         
-        write("Five: ", five);
+        writeln("Six: ", six);
+        writeln("Ratio: ", ratio);
         
-        while (five != 3) {
-        	five = five - 1;
+        while (ratio != 6) {
+        	ratio = ratio + 1;
         }
         
-        write("Five: ", five);
+        writeln("Ratio after While loop: ", ratio);
         
-        if (ratio == 5/9.0) { 
-        	ratio = 1;
+        if (ratio == 6) { 
+        	ratio = 5;
         	
-        	write("Ratio: ", ratio);
+        	writeln("Ratio after If statement: ", ratio);
         	
-        	if (ratio == 1) { 
-        		ratio = five/9.0;
+        	if (ratio == 5) { 
+        		ratio = 3;
         	}
+        	
+        	writeln("Ratio after nested If statement: ", ratio);
         }
         
-        write("Ratio: ", ratio);
+        number = six + ratio;
+        writeln("Number = six + ratio = ", number);
         
-        fahrenheit = 72;
-        centigrade = (fahrenheit - 32)*ratio;
-
-        centigrade = 25;
-        fahrenheit = centigrade/ratio + 32;
-
-        centigrade = 25;
-        fahrenheit = 32 + centigrade/ratio;
-    }
-    
-
-    { //Calculate a square root using Newton's method
-        number = 2;
-        root = number;
-        root = (number/root + root)/2;
+        number = number / ratio;
+        writeln("Number = number / ratio = ", number);
+        
+        number = number * ratio;
+        writeln("Number = number * ratio = ", number);
+        
+        
     }
 
-    character = 'a';
+    character = "a";
+    writeln("Character: ", character);
     
-    write("Character: ", ratio);
+    programEnd;
 }
