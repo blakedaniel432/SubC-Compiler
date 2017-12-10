@@ -30,7 +30,7 @@ import static wci.intermediate.typeimpl.TypeKeyImpl.*;
  * </p>
  */
 public class VariableDeclarationsParser extends DeclarationsParser {
-	private Definition definition; // how to define the identifier
+	private Definition definition;
 	protected TypeSpec type;
 
 	/**
