@@ -39,12 +39,50 @@ public class StructuredDataGenerator extends CodeGenerator {
 	}
 
 	/**
-	 * Generate code to allocate the structured data of a program, procedure, or
+	 * Generate code to allocate the string variables of a program, procedure, or
 	 * function.
 	 * 
 	 * @param routineId
 	 *            the routine's symbol table entry.
 	 */
 	public void generate(SymTabEntry routineId) {
+		SymTab symTab = (SymTab) routineId.getAttribute(ROUTINE_SYMTAB);
+		ArrayList<SymTabEntry> ids = symTab.sortedEntries();
+
+		// Loop over all the symbol table's identifiers to generate
+		// data allocation code for string variables.
+		emitBlankLine();
+		for (SymTabEntry id : ids) {
+			if (id.getDefinition() == VARIABLE) {
+				TypeSpec idType = id.getTypeSpec();
+
+				if (idType.isSubCString()) {
+					generateAllocateString(id, idType);
+				}
+			}
+		}
+	}
+
+	private static final String PADDED_STRING_CREATE = "PaddedString.create(I)Ljava/lang/StringBuilder;";
+
+	/**
+	 * Generate code to allocate a string variable as a StringBuilder.
+	 * 
+	 * @param variableId
+	 *            the symbol table entry of the variable.
+	 * @param stringType
+	 *            the string data type.
+	 */
+	private void generateAllocateString(SymTabEntry variableId, TypeSpec stringType) {
+		int length = (Integer) stringType.getAttribute(ARRAY_ELEMENT_COUNT);
+
+		// Allocate a blank-filled string of the correct length.
+		emitLoadConstant(length);
+		emit(INVOKESTATIC, PADDED_STRING_CREATE);
+		localStack.increase(1);
+
+		// Store the allocation into the string variable.
+		emitStoreVariable(variableId);
+		localStack.decrease(1);
 	}
 }

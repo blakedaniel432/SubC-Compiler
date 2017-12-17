@@ -133,6 +133,15 @@ public class ExpressionGenerator extends StatementGenerator {
 			break;
 		}
 
+		case CALL: {
+
+			// Generate code to call a function.
+			CallGenerator callGenerator = new CallGenerator(this);
+			callGenerator.generate(node);
+
+			break;
+		}
+
 		// Must be a binary operator.
 		default:
 			generateBinaryOperator(node, nodeType);
@@ -301,6 +310,46 @@ public class ExpressionGenerator extends StatementGenerator {
 
 			else if (realMode) {
 				emit(FCMPG);
+
+				switch (nodeType) {
+				case EQ:
+					emit(IFEQ, trueLabel);
+					break;
+				case NE:
+					emit(IFNE, trueLabel);
+					break;
+				case LT:
+					emit(IFLT, trueLabel);
+					break;
+				case LE:
+					emit(IFLE, trueLabel);
+					break;
+				case GT:
+					emit(IFGT, trueLabel);
+					break;
+				case GE:
+					emit(IFGE, trueLabel);
+					break;
+				}
+
+				localStack.decrease(2);
+			}
+
+			else if (stringMode) {
+
+				// Load the value of the first string operand.
+				generate(operandNode1);
+				if (operandNode1.getType() != STRING_CONSTANT) {
+					emit(INVOKEVIRTUAL, "java/lang/StringBuilder.toString()" + "Ljava/lang/String;");
+				}
+
+				// Load the value of the second string operand.
+				generate(operandNode2);
+				if (operandNode2.getType() != STRING_CONSTANT) {
+					emit(INVOKEVIRTUAL, "java/lang/StringBuilder.toString()" + "Ljava/lang/String;");
+				}
+
+				emit(INVOKEVIRTUAL, "java/lang/String.compareTo(Ljava/lang/String;)I");
 
 				switch (nodeType) {
 				case EQ:
