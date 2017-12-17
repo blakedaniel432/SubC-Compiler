@@ -68,6 +68,18 @@ public class StatementGenerator extends CodeGenerator {
 			break;
 		}
 
+		case IF: {
+			IfGenerator ifGenerator = new IfGenerator(this);
+			ifGenerator.generate(node);
+			break;
+		}
+
+		case LOOP: {
+			LoopGenerator loopfGenerator = new LoopGenerator(this);
+			loopfGenerator.generate(node);
+			break;
+		}
+
 		case CALL: {
 			CallGenerator callGenerator = new CallGenerator(this);
 			callGenerator.generate(node);

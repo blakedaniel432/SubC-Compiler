@@ -169,7 +169,7 @@ PROCEDURE EnterWord;
      read into the end of the table.}
 
     VAR
-        i : wordIndexRange;
+	i : wordIndexRange;
 
     BEGIN
         {By the time we process a word at the end of an input line,
@@ -210,8 +210,8 @@ PROCEDURE SortWords;
     {Sort the words alphabetically.}
 
     VAR
-        i, j : wordIndexRange;
-        temp : wordEntryType;
+	i, j : wordIndexRange;
+	temp : wordEntryType;
 
     BEGIN
         FOR i := 1 TO nextWordIndex - 2 DO BEGIN

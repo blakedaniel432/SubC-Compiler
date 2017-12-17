@@ -15,6 +15,7 @@ procedure programEnd;
 int six;
 int ratio;
 int number;
+
 {
 	int root;
 	char character;
@@ -27,6 +28,7 @@ int number;
 		
         six = -1 + TWO - THREE + 3 + 5;       
         ratio = six/2;
+
         
         writeln("Six: ", six);
         writeln("Ratio: ", ratio);

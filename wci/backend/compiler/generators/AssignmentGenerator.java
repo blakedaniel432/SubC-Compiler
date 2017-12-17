@@ -83,6 +83,23 @@ public class AssignmentGenerator extends StatementGenerator {
 			localStack.increase(1);
 		}
 
+		ArrayList<ICodeNode> targetChildren = targetNode.getChildren();
+		int childrenCount = targetChildren.size();
+
+		// The last modifier, if any, is the variable's last subscript or field.
+		ICodeNode lastModifier = null;
+
+		// The target variable has subscripts and/or fields.
+		if (childrenCount > 0) {
+			lastModifier = targetChildren.get(childrenCount - 1);
+
+			if (assignmentType.isSubCString()) {
+				exprGenerator.generateLoadValue(targetNode);
+			} else {
+				assignmentType = exprGenerator.generateLoadVariable(targetNode);
+			}
+		}
+
 		// Assign to a SubC string.
 		else if (assignmentType.isSubCString()) {
 			emitLoadVariable(targetId);
@@ -93,7 +110,8 @@ public class AssignmentGenerator extends StatementGenerator {
 		if (targetType.isSubCString()) {
 			generateStringAssignment(assignmentType, exprNode, exprType, exprGenerator);
 		} else {
-			generateScalarAssignment(targetType, targetId, slot, nestingLevel, exprNode, exprType, exprGenerator);
+			generateScalarAssignment(targetType, targetId, lastModifier, slot, nestingLevel, exprNode, exprType,
+					exprGenerator);
 		}
 	}
 
@@ -104,6 +122,8 @@ public class AssignmentGenerator extends StatementGenerator {
 	 *            the data type of the target.
 	 * @param targetId
 	 *            the symbol table entry of the target variable.
+	 * @param lastModifier
+	 *            the tree node of the last field or subscript.
 	 * @param index
 	 *            the index of the target variable.
 	 * @param nestingLevel
@@ -115,8 +135,8 @@ public class AssignmentGenerator extends StatementGenerator {
 	 * @param exprGenerator
 	 *            the expression generator.
 	 */
-	private void generateScalarAssignment(TypeSpec targetType, SymTabEntry targetId, int index, int nestingLevel,
-			ICodeNode exprNode, TypeSpec exprType, ExpressionGenerator exprGenerator) {
+	private void generateScalarAssignment(TypeSpec targetType, SymTabEntry targetId, ICodeNode lastModifier, int index,
+			int nestingLevel, ICodeNode exprNode, TypeSpec exprType, ExpressionGenerator exprGenerator) {
 		// Generate code to evaluate the expression.
 		// Special cases: float variable := integer constant
 		// float variable := integer expression
@@ -142,8 +162,31 @@ public class AssignmentGenerator extends StatementGenerator {
 		}
 
 		// Generate code to store the expression value into the target variable.
-		emitStoreVariable(targetId, nestingLevel, index);
-		localStack.decrease(isWrapped(targetId) ? 2 : 1);
+		// The target variable has no subscripts or fields.
+		if (lastModifier == null) {
+			emitStoreVariable(targetId, nestingLevel, index);
+			localStack.decrease(isWrapped(targetId) ? 2 : 1);
+		}
+
+		// The target variable is a field.
+		else if (lastModifier.getType() == ICodeNodeTypeImpl.FIELD) {
+			TypeSpec dataType = lastModifier.getTypeSpec().baseType();
+			TypeForm typeForm = dataType.getForm();
+
+			if ((typeForm == SCALAR) || (typeForm == ENUMERATION)) {
+				emit(INVOKESTATIC, valueOfSignature(dataType));
+			}
+
+			emit(INVOKEVIRTUAL, "java/util/HashMap.put(Ljava/lang/Object;" + "Ljava/lang/Object;)Ljava/lang/Object;");
+			emit(POP);
+			localStack.decrease(3);
+		}
+
+		// The target variable is an array element.
+		else {
+			emitStoreArrayElement(targetType);
+			localStack.decrease(3);
+		}
 	}
 
 	private static final String SETLENGTH = "java/lang/StringBuilder.setLength(I)V";

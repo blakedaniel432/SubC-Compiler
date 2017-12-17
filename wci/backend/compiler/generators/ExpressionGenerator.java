@@ -155,7 +155,34 @@ public class ExpressionGenerator extends StatementGenerator {
 	 *            the variable node.
 	 */
 	protected void generateLoadValue(ICodeNode variableNode) {
-		generateLoadVariable(variableNode);
+		ArrayList<ICodeNode> variableChildren = variableNode.getChildren();
+		int childrenCount = variableChildren.size();
+
+		// First load the variable's address (structured) or value (scalar).
+		TypeSpec variableType = generateLoadVariable(variableNode);
+
+		// Were there any subscript or field modifiers?
+		if (childrenCount > 0) {
+			ICodeNodeType lastModifierType = variableChildren.get(childrenCount - 1).getType();
+
+			// Array subscript.
+			if (lastModifierType == SUBSCRIPTS) {
+				emitLoadArrayElement(variableType);
+				localStack.decrease(1);
+			}
+
+			// Record field.
+			else {
+				emit(INVOKEVIRTUAL, "java/util/HashMap.get(Ljava/lang/Object;)" + "Ljava/lang/Object;");
+				emitCheckCastClass(variableType);
+
+				if (!isStructured(variableType)) {
+					emit(INVOKEVIRTUAL, valueSignature(variableType));
+				}
+
+				localStack.decrease(1);
+			}
+		}
 	}
 
 	/**
@@ -167,11 +194,93 @@ public class ExpressionGenerator extends StatementGenerator {
 	protected TypeSpec generateLoadVariable(ICodeNode variableNode) {
 		SymTabEntry variableId = (SymTabEntry) variableNode.getAttribute(ID);
 		TypeSpec variableType = variableId.getTypeSpec();
+		ArrayList<ICodeNode> variableChildren = variableNode.getChildren();
+		int childrenCount = variableChildren.size();
 
 		emitLoadVariable(variableId);
 		localStack.increase(1);
 
+		// Process subscripts and/or fields.
+		for (int i = 0; i < childrenCount; ++i) {
+			ICodeNode modifier = variableChildren.get(i);
+			ICodeNodeType modifierType = modifier.getType();
+			boolean last = i == childrenCount - 1;
+
+			if (modifierType == SUBSCRIPTS) {
+				variableType = generateArrayElement(modifier, variableType, last);
+			} else if (modifierType == ICodeNodeTypeImpl.FIELD) {
+				variableType = generateRecordField(modifier, last);
+			}
+		}
+
 		return variableType;
+	}
+
+	/**
+	 * Generate code for a subscripted variable.
+	 * 
+	 * @param subscriptsNode
+	 *            the SUBSCRIPTS node.
+	 * @param variableType
+	 *            the array variable type.
+	 * @param last
+	 *            true if this is the variable's last subscript, else false.
+	 * @return the type of the element.
+	 */
+	private TypeSpec generateArrayElement(ICodeNode subscriptsNode, TypeSpec variableType, boolean last) {
+		ArrayList<ICodeNode> subscripts = subscriptsNode.getChildren();
+		ICodeNode lastSubscript = subscripts.get(subscripts.size() - 1);
+		TypeSpec elmtType = variableType;
+
+		for (ICodeNode subscript : subscripts) {
+			generate(subscript);
+
+			TypeSpec indexType = (TypeSpec) elmtType.getAttribute(ARRAY_INDEX_TYPE);
+
+			if (indexType.getForm() == SUBRANGE) {
+				int min = (Integer) indexType.getAttribute(SUBRANGE_MIN_VALUE);
+				if (min != 0) {
+					emitLoadConstant(min);
+					emit(ISUB);
+					localStack.use(1);
+				}
+			}
+
+			if (!last || (subscript != lastSubscript)) {
+				emit(AALOAD);
+				localStack.decrease(1);
+			}
+
+			elmtType = (TypeSpec) elmtType.getAttribute(ARRAY_ELEMENT_TYPE);
+		}
+
+		return elmtType;
+	}
+
+	/**
+	 * Generate code to access the value of a record field.
+	 * 
+	 * @param fieldNode
+	 *            the FIELD node.
+	 * @param last
+	 *            true if this is the variable's last field, else false.
+	 * @return the type of the field.
+	 */
+	private TypeSpec generateRecordField(ICodeNode fieldNode, boolean last) {
+		SymTabEntry fieldId = (SymTabEntry) fieldNode.getAttribute(ID);
+		String fieldName = fieldId.getName();
+		TypeSpec fieldType = fieldNode.getTypeSpec();
+
+		emitLoadConstant(fieldName);
+		localStack.increase(1);
+
+		if (!last) {
+			emit(INVOKEVIRTUAL, "java/util/HashMap.get(Ljava/lang/Object;)" + "Ljava/lang/Object;");
+			emitCheckCast(fieldType);
+			localStack.decrease(1);
+		}
+
+		return fieldType;
 	}
 
 	// Set of arithmetic operator node types.
