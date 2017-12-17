@@ -35,18 +35,18 @@ int number;
         	ratio = ratio + 1;
         }
         
-        writeln("Ratio after While loop: ", ratio);
+        writeln("Ratio after while loop: ", ratio);
         
         if (ratio == 6) { 
         	ratio = 5;
         	
-        	writeln("Ratio after If statement: ", ratio);
+        	writeln("Ratio after if statement: ", ratio);
         	
         	if (ratio == 5) { 
         		ratio = 3;
         	}
         	
-        	writeln("Ratio after nested If statement: ", ratio);
+        	writeln("Ratio after nested if statement: ", ratio);
         }
         
         number = six + ratio;
