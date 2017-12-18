@@ -87,13 +87,13 @@ public class IfStatementParser extends StatementParser {
 		token = currentToken();
 
 		// Look for an ELSE.
-		/*if (token.getType() == ELSE) {
+		if (token.getType() == ELSE) {
 			token = nextToken(); // consume the ELSE
 
 			// Parse the ELSE statement.
 			// The IF node adopts the statement subtree as its third child.
 			ifNode.addChild(statementParser.parse(token));
-		}*/
+		}
 
 		return ifNode;
 	}

@@ -26,7 +26,7 @@ int number;
         const int TWO = 2;
         const int THREE = 3;
 		
-        six = -1 + TWO - THREE + 3 + 5;       
+        six = -1 + TWO - THREE + 3 + 5;     
         ratio = six/2;
 
         

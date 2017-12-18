@@ -1,0 +1,8 @@
+FrankenC Compiler by Blake and Daniel
+- HOW TO USE -
+
+Execute program:
+	SubC execute [filename].c
+
+Compile Jasmin code:
+	SubC compile [filename].c
